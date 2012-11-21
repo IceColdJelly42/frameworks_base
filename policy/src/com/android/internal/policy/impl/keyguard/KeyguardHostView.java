@@ -87,6 +87,7 @@ public class KeyguardHostView extends KeyguardViewBase {
     private int mAppWidgetToShow;
 
     private boolean mCheckAppWidgetConsistencyOnBootCompleted = false;
+    private boolean mCleanupAppWidgetsOnBootCompleted = false;
 
     protected OnDismissAction mDismissAction;
 
@@ -161,6 +162,12 @@ public class KeyguardHostView extends KeyguardViewBase {
     }
 
     private void cleanupAppWidgetIds() {
+        // Since this method may delete a widget (which we can't do until boot completed) we
+        // may have to defer it until after boot complete.
+        if (!KeyguardUpdateMonitor.getInstance(mContext).hasBootCompleted()) {
+            mCleanupAppWidgetsOnBootCompleted = true;
+            return;
+        }
         // Clean up appWidgetIds that are bound to lockscreen, but not actually used
         // This is only to clean up after another bug: we used to not call
         // deleteAppWidgetId when a user manually deleted a widget in keyguard. This code
@@ -195,6 +202,10 @@ public class KeyguardHostView extends KeyguardViewBase {
                 checkAppWidgetConsistency();
                 mSwitchPageRunnable.run();
                 mCheckAppWidgetConsistencyOnBootCompleted = false;
+            }
+            if (mCleanupAppWidgetsOnBootCompleted) {
+                cleanupAppWidgetIds();
+                mCleanupAppWidgetsOnBootCompleted = false;
             }
         }
     };
