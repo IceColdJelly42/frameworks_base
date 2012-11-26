@@ -3184,7 +3184,7 @@ public final class ActivityManagerService extends ActivityManagerNative
         }
     }
 
-    final void logAppTooSlow(ProcessRecord app, long startTime, String msg) {
+    final void logAppTooSlow(int pid, long startTime, String msg) {
         if (true || IS_USER_BUILD) {
             return;
         }
@@ -3223,7 +3223,7 @@ public final class ActivityManagerService extends ActivityManagerNative
                 sb.append(msg);
                 fos = new FileOutputStream(tracesFile);
                 fos.write(sb.toString().getBytes());
-                if (app == null) {
+                if (pid <= 0) {
                     fos.write("\n*** No application process!".getBytes());
                 }
             } catch (IOException e) {
@@ -3240,9 +3240,9 @@ public final class ActivityManagerService extends ActivityManagerNative
                 }
             }
 
-            if (app != null) {
+            if (pid > 0) {
                 ArrayList<Integer> firstPids = new ArrayList<Integer>();
-                firstPids.add(app.pid);
+                firstPids.add(pid);
                 dumpStackTraces(tracesPath, firstPids, null, null, null);
             }
 

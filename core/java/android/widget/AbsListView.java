@@ -3941,7 +3941,6 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
                 // For long flings, scrolling cache causes stutter, so don't use it
                 clearScrollingCache();
             }
-
             int initialY = initialVelocity < 0 ? Integer.MAX_VALUE : 0;
             mLastFlingY = initialY;
             mScroller.setInterpolator(null);
@@ -4016,7 +4015,6 @@ public abstract class AbsListView extends AdapterView<ListAdapter> implements Te
         void endFling() {
             endFling(true);
         }
-
         void endFling(boolean clearCache) {
             mTouchMode = TOUCH_MODE_REST;
 
