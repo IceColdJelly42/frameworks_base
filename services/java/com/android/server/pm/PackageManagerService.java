@@ -1040,7 +1040,8 @@ public class PackageManagerService extends IPackageManager.Stub {
 
             readPermissions();
 
-            mRestoredSettings = mSettings.readLPw(sUserManager.getUsers(false));
+            mRestoredSettings = mSettings.readLPw(sUserManager.getUsers(false),
+                    mSdkVersion, mOnlyCore);
             long startTime = SystemClock.uptimeMillis();
 
             EventLog.writeEvent(EventLogTags.BOOT_PROGRESS_PMS_SYSTEM_SCAN_START,
@@ -1338,6 +1339,10 @@ public class PackageManagerService extends IPackageManager.Stub {
 
     public boolean isFirstBoot() {
         return !mRestoredSettings;
+    }
+
+    public boolean isOnlyCoreApps() {
+        return mOnlyCore;
     }
 
     private String getRequiredVerifierLPr() {
