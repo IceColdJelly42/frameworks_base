@@ -85,6 +85,7 @@ public class KeyguardHostView extends KeyguardViewBase {
     private boolean mEnableFallback; // TODO: This should get the value from KeyguardPatternView
     private SecurityMode mCurrentSecuritySelection = SecurityMode.Invalid;
     private int mAppWidgetToShow;
+    private int mPreviousWidgetPage = -1;
 
     private boolean mCheckAppWidgetConsistencyOnBootCompleted = false;
     private boolean mCleanupAppWidgetsOnBootCompleted = false;
@@ -962,6 +963,7 @@ public class KeyguardHostView extends KeyguardViewBase {
 
     public void clearAppWidgetToShow() {
         mAppWidgetToShow = AppWidgetManager.INVALID_APPWIDGET_ID;
+        mPreviousWidgetPage = -1;
     }
 
     @Override
@@ -1349,10 +1351,22 @@ public class KeyguardHostView extends KeyguardViewBase {
            showAppropriateWidgetPage();
         }
     };
+    Runnable mOnRestoreUpdatePageRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mSwitchPageRunnable.run();
+
+            // We need to update the alpha's of the hints and content after setting the current page
+            mViewStateManager.showUsabilityHints();
+        };
+    };
+
 
     static class SavedState extends BaseSavedState {
         int transportState;
         int appWidgetToShow = AppWidgetManager.INVALID_APPWIDGET_ID;
+        // Note the appWidgetContainerPage is only used if the appWidgetToShow is invalid
+        int appWidgetContainerPage = -1;
 
         SavedState(Parcelable superState) {
             super(superState);
@@ -1362,6 +1376,7 @@ public class KeyguardHostView extends KeyguardViewBase {
             super(in);
             this.transportState = in.readInt();
             this.appWidgetToShow = in.readInt();
+            this.appWidgetContainerPage = in.readInt();
         }
 
         @Override
@@ -1369,6 +1384,7 @@ public class KeyguardHostView extends KeyguardViewBase {
             super.writeToParcel(out, flags);
             out.writeInt(this.transportState);
             out.writeInt(this.appWidgetToShow);
+            out.writeInt(this.appWidgetContainerPage);
         }
 
         public static final Parcelable.Creator<SavedState> CREATOR
@@ -1390,6 +1406,7 @@ public class KeyguardHostView extends KeyguardViewBase {
         SavedState ss = new SavedState(superState);
         ss.transportState = mViewStateManager.getTransportState();
         ss.appWidgetToShow = mAppWidgetToShow;
+        ss.appWidgetContainerPage = mAppWidgetContainer.getCurrentPage();
         return ss;
     }
 
@@ -1404,7 +1421,8 @@ public class KeyguardHostView extends KeyguardViewBase {
         super.onRestoreInstanceState(ss.getSuperState());
         mViewStateManager.setTransportState(ss.transportState);
         mAppWidgetToShow = ss.appWidgetToShow;
-        post(mSwitchPageRunnable);
+        mPreviousWidgetPage = ss.appWidgetContainerPage;
+        post(mOnRestoreUpdatePageRunnable);
     }
 
     @Override
@@ -1460,6 +1478,9 @@ public class KeyguardHostView extends KeyguardViewBase {
                 }
             }
             mAppWidgetToShow = AppWidgetManager.INVALID_APPWIDGET_ID;
+        }
+        if (mPreviousWidgetPage > -1) {
+            return mPreviousWidgetPage;
         }
         // if music playing, show transport
         if (isMusicPlaying) {
