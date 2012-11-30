@@ -24,6 +24,7 @@ import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Parcelable;
@@ -128,6 +129,12 @@ public class KeyguardViewManager {
         public ViewManagerHost(Context context) {
             super(context);
             setFitsSystemWindows(true);
+        }
+
+        @Override
+        protected boolean fitSystemWindows(Rect insets) {
+            Log.v("TAG", "bug 7643792: fitSystemWindows(" + insets.toShortString() + ")");
+            return super.fitSystemWindows(insets);
         }
 
         @Override
