@@ -14594,6 +14594,10 @@ public final class ActivityManagerService extends ActivityManagerNative
                 // Clean up all state and processes associated with the user.
                 // Kill all the processes for the user.
                 forceStopUserLocked(userId);
+                AttributeCache ac = AttributeCache.instance();
+                if (ac != null) {
+                    ac.removeUser(userId);
+                }
             }
         }
 
