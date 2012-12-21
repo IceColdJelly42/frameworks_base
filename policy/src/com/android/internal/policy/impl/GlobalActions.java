@@ -378,11 +378,12 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mItems.add(new SinglePressAction(com.android.internal.R.drawable.ic_lock_torch,
                     R.string.global_action_torch) {
                 public void onPress() {
-                    Intent intent = new Intent("android.intent.action.MAIN");
+                    mContext.sendBroadcast(new Intent("net.cactii.flash2.TOGGLE_FLASHLIGHT"));
+                    /*Intent intent = new Intent("android.intent.action.MAIN");
                     intent.setComponent(ComponentName.unflattenFromString("com.aokp.Torch/.TorchActivity"));
                     intent.addCategory("android.intent.category.LAUNCHER");
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    mContext.startActivity(intent);
+                    mContext.startActivity(intent);*/
                 }
 
                 public boolean showDuringKeyguard() {
