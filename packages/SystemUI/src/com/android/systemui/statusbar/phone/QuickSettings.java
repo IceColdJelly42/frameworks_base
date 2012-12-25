@@ -20,7 +20,6 @@ import com.android.internal.view.RotationPolicy;
 import com.android.internal.widget.LockPatternUtils;
 import com.android.systemui.R;
 
-import com.android.systemui.statusbar.BaseStatusBar;
 import com.android.systemui.statusbar.phone.QuickSettingsModel.BluetoothState;
 import com.android.systemui.statusbar.phone.QuickSettingsModel.RSSIState;
 import com.android.systemui.statusbar.phone.QuickSettingsModel.State;
@@ -100,7 +99,7 @@ import java.util.HashMap;
 /**
  *
  */
-public class QuickSettings {
+class QuickSettings {
     private static final String TAG = "QuickSettings";
     public static final boolean SHOW_IME_TILE = false;
 
@@ -179,7 +178,7 @@ public class QuickSettings {
     private WifiManager wifiManager;
     private ConnectivityManager connManager;
     private LocationManager locationManager;
-    private BaseStatusBar mStatusBarService;
+    private PhoneStatusBar mStatusBarService;
     private BluetoothState mBluetoothState;
     private TelephonyManager tm;
     private ConnectivityManager mConnService;
@@ -292,15 +291,15 @@ public class QuickSettings {
         new SoundObserver(new Handler()).observe();
     }
 
-    public void setBar(PanelBar bar) {
+    void setBar(PanelBar bar) {
         mBar = bar;
     }
 
-    public void setService(BaseStatusBar statusBar) {
-        mStatusBarService = statusBar;
+    public void setService(PhoneStatusBar phoneStatusBar) {
+        mStatusBarService = phoneStatusBar;
     }
 
-    public BaseStatusBar getService() {
+    public PhoneStatusBar getService() {
         return mStatusBarService;
     }
 
@@ -308,7 +307,7 @@ public class QuickSettings {
         mModel.onImeWindowStatusChanged(visible);
     }
 
-    public void setup(NetworkController networkController, BluetoothController bluetoothController,
+    void setup(NetworkController networkController, BluetoothController bluetoothController,
             BatteryController batteryController, LocationController locationController) {
         mBluetoothController = bluetoothController;
 
