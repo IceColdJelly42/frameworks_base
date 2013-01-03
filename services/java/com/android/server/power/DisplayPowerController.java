@@ -43,6 +43,8 @@ import android.util.TimeUtils;
 import android.view.Display;
 
 import java.io.PrintWriter;
+import java.lang.ArrayIndexOutOfBoundsException;
+
 
 /**
  * Controls the power state of the display.
@@ -325,6 +327,7 @@ final class DisplayPowerController {
     // while the light sensor warms up.
     // Use -1 if there is no current auto-brightness value available.
     private int mScreenAutoBrightness = -1;
+    private int mButtonAutoBrightness = -1;
 
     // The last screen auto-brightness gamma.  (For printing in dump() only.)
     private float mLastScreenAutoBrightnessGamma = 1.0f;
@@ -342,6 +345,9 @@ final class DisplayPowerController {
     private boolean mTwilightChanged;
 
     private final LightsService.Light mButtonlight;
+    
+    private int[] mButtonBrightnessValues;
+    private int[] mScreenBrightnessValues;
     
     /**
      * Creates the display power controller.
@@ -377,21 +383,24 @@ final class DisplayPowerController {
         if (mUseSoftwareAutoBrightnessConfig) {
             int[] lux = resources.getIntArray(
                     com.android.internal.R.array.config_autoBrightnessLevels);
-            int[] screenBrightness = resources.getIntArray(
+            mScreenBrightnessValues = resources.getIntArray(
                     com.android.internal.R.array.config_autoBrightnessLcdBacklightValues);
 
-            mScreenAutoBrightnessSpline = createAutoBrightnessSpline(lux, screenBrightness);
+			mButtonBrightnessValues = resources.getIntArray(
+                    com.android.internal.R.array.config_autoBrightnessButtonBacklightValues);
+                    
+            mScreenAutoBrightnessSpline = createAutoBrightnessSpline(lux, mScreenBrightnessValues);
             if (mScreenAutoBrightnessSpline == null) {
                 Slog.e(TAG, "Error in config.xml.  config_autoBrightnessLcdBacklightValues "
-                        + "(size " + screenBrightness.length + ") "
+                        + "(size " + mScreenBrightnessValues.length + ") "
                         + "must be monotic and have exactly one more entry than "
                         + "config_autoBrightnessLevels (size " + lux.length + ") "
                         + "which must be strictly increasing.  "
                         + "Auto-brightness will be disabled.");
                 mUseSoftwareAutoBrightnessConfig = false;
             } else {
-                if (screenBrightness[0] < screenBrightnessMinimum) {
-                    screenBrightnessMinimum = screenBrightness[0];
+                if (mScreenBrightnessValues[0] < screenBrightnessMinimum) {
+                    screenBrightnessMinimum = mScreenBrightnessValues[0];
                 }
             }
 
@@ -728,6 +737,9 @@ final class DisplayPowerController {
         /* button light */
         boolean buttonlight_on = wantScreenOn(mPowerRequest.screenState) && (mPowerRequest.screenState != DisplayPowerRequest.SCREEN_STATE_DIM); 
        
+        if(mButtonAutoBrightness!=-1 && mButtonAutoBrightness==0){
+        	buttonlight_on = false;
+        }
         mButtonlight.setBrightness(buttonlight_on ? 1 : 0);
 
         // Report whether the display is ready for use.
@@ -1100,6 +1112,32 @@ final class DisplayPowerController {
             }
 
             mScreenAutoBrightness = newScreenAutoBrightness;
+            
+            // search for the index of the new value
+            int brightnessIndex=-1;
+            mButtonAutoBrightness=-1;
+            for(int i=0; i<mScreenBrightnessValues.length; i++){
+                // straight match
+            	if(mScreenBrightnessValues[i]==mScreenAutoBrightness){
+            		brightnessIndex=i;
+            		break;
+            	}
+            	// between two values
+            	if(i>0 && mScreenBrightnessValues[i]>mScreenAutoBrightness 
+            	    && mScreenBrightnessValues[i-1]<mScreenAutoBrightness){
+            		brightnessIndex=i;
+            		break;
+            	}
+            }
+            
+            if(brightnessIndex!=-1){
+            	try {
+            		mButtonAutoBrightness = mButtonBrightnessValues[brightnessIndex];
+            	} catch(ArrayIndexOutOfBoundsException e){
+            	    mButtonAutoBrightness=-1;
+            	}
+            }
+            Slog.d(TAG, "screen brightness=" + mScreenAutoBrightness + " button brightness="+mButtonAutoBrightness);
             mLastScreenAutoBrightnessGamma = gamma;
             if (sendUpdate) {
                 sendUpdatePowerState();
