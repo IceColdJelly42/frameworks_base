@@ -53,4 +53,9 @@ interface IPowerManager
     void setAttentionLight(boolean on, int color);
 
     void cpuBoost(int duration);
+    
+    // custom light levels
+    int getCurrentScreenBrightnessValue();
+    int getCurrentButtonBrightnessValue();    
+    boolean isUsingAutoBrightness();
 }

@@ -2615,4 +2615,16 @@ public final class PowerManagerService extends IPowerManager.Stub
             }
         }
     }
+    
+    public int getCurrentScreenBrightnessValue(){
+        return mDisplayPowerController.getCurrentScreenBrightnessValue();
+    }
+
+    public int getCurrentButtonBrightnessValue(){       
+        return mDisplayPowerController.getCurrentButtonBrightnessValue();
+    }
+    
+    public boolean isUsingAutoBrightness(){
+        return mDisplayPowerController.isUsingAutoBrightness();
+    }
 }
