@@ -373,7 +373,7 @@ final class DisplayPowerController {
      * Creates the display power controller.
      */
     public DisplayPowerController(Looper looper, Context context, Notifier notifier,
-            LightsService lights, TwilightService twilight,
+            LightsService lights, TwilightService twilight, SensorManager sensorManager,
             DisplayManagerService displayManager,
             DisplayBlanker displayBlanker,
             Callbacks callbacks, Handler callbackHandler) {
@@ -388,7 +388,7 @@ final class DisplayPowerController {
         mButtonlight = mLights.getLight(LightsService.LIGHT_ID_BUTTONS);
         
         mTwilight = twilight;
-        mSensorManager = new SystemSensorManager(mHandler.getLooper());
+        mSensorManager = sensorManager;
         mDisplayManager = displayManager;
 
         final Resources resources = mContext.getResources();
