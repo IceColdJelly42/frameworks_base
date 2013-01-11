@@ -57,10 +57,10 @@ public class CPUInfoService extends Service {
     	    public void handleMessage(Message msg) {
     	    	if(msg.what==4){
     	    		mLpMode = ((String) msg.obj).equals("1");
+    	    		updateDisplay();
     	    	} else {
             		mCurrFreq[msg.what]=(String) msg.obj;
             	}
-    	        updateDisplay();
     	    }
     	};
 
@@ -213,7 +213,7 @@ public class CPUInfoService extends Service {
        	public void run() {
        	    try {
        	        while (!mInterrupt) {
-       	            sleep(500);
+       	            sleep(250);
        	            for(int i=0; i<4; i++){
        	            	final String freqFile=CPU_ROOT+i+CPU_TAIL;
        	            	String currFreq = readOneLine(freqFile);
