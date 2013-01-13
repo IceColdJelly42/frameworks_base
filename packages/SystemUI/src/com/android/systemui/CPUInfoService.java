@@ -51,6 +51,7 @@ public class CPUInfoService extends Service {
         private int mNeededHeight;
         
         private String[] mCurrFreq={"0", "0", "0", "0"};
+        private String[] mCurrGov={"", "", "", ""};
         private boolean mLpMode;
 
     	private Handler mCurCPUHandler = new Handler() {
@@ -59,8 +60,10 @@ public class CPUInfoService extends Service {
     	    		mLpMode = ((String) msg.obj).equals("1");
     	    		updateDisplay();
     	    	} else {
-            		mCurrFreq[msg.what]=(String) msg.obj;
-            	}
+    	    		String[] parts=((String) msg.obj).split(":");
+            		mCurrFreq[msg.what]=parts[0];
+            		mCurrGov[msg.what]=parts[1];
+               	}
     	    }
     	};
 
@@ -123,6 +126,13 @@ public class CPUInfoService extends Service {
                     resolveSize(mNeededHeight, heightMeasureSpec));
         }
 
+		private String getCPUInfoString(int i) {
+            String freq=mCurrFreq[i];
+            String gov=mCurrGov[i];
+            
+            return "cpu:"+i+" "+gov+":"+freq;
+		}
+		
         @Override
         public void onDraw(Canvas canvas) {
             super.onDraw(canvas);
@@ -135,17 +145,18 @@ public class CPUInfoService extends Service {
 
             int y = mPaddingTop - (int)mAscent;
             for(int i=0; i<mCurrFreq.length; i++){
-            	String freq=mCurrFreq[i];
-            	if(!freq.equals("0")){
+            	String s=getCPUInfoString(i);
+				String freq=mCurrFreq[i];
+               	if(!freq.equals("0")){
             	    if(i==0 && mLpMode){
-            			canvas.drawText("cpu"+i+" "+freq, RIGHT-mPaddingRight-150,
+            			canvas.drawText(s, RIGHT-mPaddingRight-300,
                     		y-1, mLpPaint);
             	    } else {
-            			canvas.drawText("cpu"+i+" "+freq, RIGHT-mPaddingRight-150,
+            			canvas.drawText(s, RIGHT-mPaddingRight-300,
                     		y-1, mOnlinePaint);
                     }
                 } else {
-            		canvas.drawText("cpu"+i+" "+freq, RIGHT-mPaddingRight-150,
+            		canvas.drawText(s, RIGHT-mPaddingRight-300,
                     	y-1, mOfflinePaint);
                 }
                 y += mFH;
@@ -182,8 +193,9 @@ public class CPUInfoService extends Service {
 		
 		private static final String CURRENT_CPU = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq";
 		private static final String CPU_ROOT = "/sys/devices/system/cpu/cpu";
-		private static final String CPU_TAIL = "/cpufreq/scaling_cur_freq";
+		private static final String CPU_CUR_TAIL = "/cpufreq/scaling_cur_freq";
 		private static final String CPU_LP_MODE = "/sys/kernel/debug/clock/cpu_lp/state";
+	    private static final String CPU_GOV_TAIL = "/cpufreq/scaling_governor";
 		
 		public CurCPUThread(Handler handler){
 			mHandler=handler;
@@ -215,12 +227,16 @@ public class CPUInfoService extends Service {
        	        while (!mInterrupt) {
        	            sleep(250);
        	            for(int i=0; i<4; i++){
-       	            	final String freqFile=CPU_ROOT+i+CPU_TAIL;
+       	            	final String freqFile=CPU_ROOT+i+CPU_CUR_TAIL;
        	            	String currFreq = readOneLine(freqFile);
+       	            	final String govFile=CPU_ROOT+i+CPU_GOV_TAIL;
+       	            	String currGov = readOneLine(govFile);
        	            	if(currFreq==null){
        	            		currFreq="0";
+       	            		currGov="";
        	            	}
-       	            	mHandler.sendMessage(mHandler.obtainMessage(i, currFreq));
+
+       	            	mHandler.sendMessage(mHandler.obtainMessage(i, currFreq+":"+currGov));
        	            }
        	            final String lpMode=readOneLine(CPU_LP_MODE);
        	            mHandler.sendMessage(mHandler.obtainMessage(4, lpMode));
