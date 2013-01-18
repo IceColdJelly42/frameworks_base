@@ -3422,14 +3422,6 @@ public final class Settings {
          */
         public static final String NAVIGATION_BAR_COLOR = "navigation_bar_color";
 
-        /**
-         * use Alt Statusbar Signal Layout
-         * boolean
-         *
-         * @hide
-         */
-        public static final String STATUSBAR_SIGNAL_CLUSTER_ALT = "statusbar_signal_cluster_alt";
-
          /**
           * Volume keys control cursor in text fields (default is 0)
           * 0 - Disabled
