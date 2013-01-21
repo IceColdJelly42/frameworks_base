@@ -81,6 +81,15 @@
         android:contentDescription="@string/accessibility_clear_all"
         />     
 
+    <com.android.systemui.statusbar.policy.KeyButtonView android:id="@+id/screen_lock_button" 
+        android:layout_width="50dp" 
+        android:layout_height="500dp" 
+        android:src="@drawable/ic_sysbar_lock" 
+        android:scaleType="center" 
+        systemui:keyCode="26" 
+        systemui:glowBackground="@drawable/ic_sysbar_highlight"
+        />
+    
     <FrameLayout android:id="@+id/settings_button_holder"
         android:layout_width="50dp"
         android:layout_height="50dp"
