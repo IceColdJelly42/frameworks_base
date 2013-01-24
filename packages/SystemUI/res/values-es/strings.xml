@@ -231,6 +231,7 @@ Vuelve a deslizar el dedo hacia abajo para acceder a los controles del sistema."
     <string name="quick_settings_gps_off_label">GPS Off</string>
     <string name="quick_settings_data_on_label">Datos On</string>
     <string name="quick_settings_data_off_label">Datos Off</string>
+    <string name="quick_settings_sound_on">Sonido on</string>
     <string name="memory">RAM</string>
     <string name="service_background_processes">%1$s libre</string>
     <string name="service_foreground_processes">%1$s usado</string>
