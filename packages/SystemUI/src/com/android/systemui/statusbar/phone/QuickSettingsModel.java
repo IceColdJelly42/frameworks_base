@@ -1324,7 +1324,7 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
             return false;
         }
         File file = new File(mFastChargePath);
-        if(!file.exists()) {
+        if(!file.exists() || !file.canRead()) {
             return false;
         }
         String content = null;
