@@ -3987,6 +3987,18 @@ public final class Settings {
         public static final String MEDIA_SCANNER_ON_BOOT = "media_scanner_on_boot";
 
         /**
+         * Used as a flag to determine if we have statusbar hidden
+         * @hide
+         */
+        public static final String STATUSBAR_HIDDEN = "statusbar_hidden";
+
+        /**
+         * Statusbar toggle for quick settings
+         * &hide
+         */
+        public static final String STATUSBAR_QUICK_TOGGLE = "statusbar_quick_toggle";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
