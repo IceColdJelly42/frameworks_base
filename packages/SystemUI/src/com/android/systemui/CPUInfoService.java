@@ -36,10 +36,13 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import java.lang.StringBuffer;
+
 public class CPUInfoService extends Service {
     private View mView;
     private Thread mCurCPUThread;
-    
+	private final String TAG = "CPUInfoService";
+		    
     private class CPUView extends View {        
         private Paint mOnlinePaint;
         private Paint mOfflinePaint;
@@ -60,21 +63,33 @@ public class CPUInfoService extends Service {
     	    	if(msg.obj==null){
     	    		return;
     	    	}
-    	    	if(msg.what>=0 && msg.what<=3){
-    	    		String[] parts=((String) msg.obj).split(":");
-    	    		if(parts.length==2){
-            			mCurrFreq[msg.what]=parts[0];
-            			mCurrGov[msg.what]=parts[1];  
-            		} else {
-            			mCurrFreq[msg.what]="0";
-            			mCurrGov[msg.what]="";  
+    	    	if(msg.what==1){
+    	    		String[] parts=((String) msg.obj).split(";");
+    	    		if(parts.length!=3){
+    	    			return;
+    	    		}
+    	    		mCPUTemp=parts[0];
+    	    		mLpMode = parts[1].equals("1");
+    	    		    	    		
+    	    		String[] cpuParts=parts[2].split("\\|");
+    	    		if(cpuParts.length!=4){
+    	    			return;
+    	    		}
+    	    		for(int i=0; i<cpuParts.length; i++){
+    	    			String cpuInfo=cpuParts[i];
+    	    			String cpuInfoParts[]=cpuInfo.split(":");
+    	    			if(cpuInfoParts.length==2){
+            				mCurrFreq[i]=cpuInfoParts[0];
+            				mCurrGov[i]=cpuInfoParts[1];  
+            			} else {
+            				mCurrFreq[i]="0";
+            				mCurrGov[i]="";  
+            			}
             		}	
-    	    	} else if(msg.what==4){
-    	    		mLpMode = ((String) msg.obj).equals("1");
-    	    	} else if(msg.what==5){
-    	    		mCPUTemp = (String) msg.obj;
+
     	    		updateDisplay();
     	    	}
+
     	    }
     	};
 
@@ -203,7 +218,6 @@ public class CPUInfoService extends Service {
     }
 
     protected class CurCPUThread extends Thread {
-		private final String TAG = "CurCPUThread";
       	private boolean mInterrupt = false;
 		private Handler mHandler;
 		
@@ -242,23 +256,29 @@ public class CPUInfoService extends Service {
        	public void run() {
        	    try {
        	        while (!mInterrupt) {
-       	            sleep(250);
+       	            sleep(500);
+       	            StringBuffer sb=new StringBuffer();
+       	            
+       	            sb.append(readOneLine(CPU_TEMP));
+       	            sb.append(";");
+       	            sb.append(readOneLine(CPU_LP_MODE));
+       	            sb.append(";");
+       	            
        	            for(int i=0; i<4; i++){
        	            	final String freqFile=CPU_ROOT+i+CPU_CUR_TAIL;
        	            	String currFreq = readOneLine(freqFile);
        	            	final String govFile=CPU_ROOT+i+CPU_GOV_TAIL;
        	            	String currGov = readOneLine(govFile);
+       	            	
        	            	if(currFreq==null){
        	            		currFreq="0";
        	            		currGov="";
        	            	}
 
-       	            	mHandler.sendMessage(mHandler.obtainMessage(i, currFreq+":"+currGov));
+						sb.append(currFreq+":"+currGov+"|");
        	            }
-       	            final String lpMode=readOneLine(CPU_LP_MODE);
-       	            mHandler.sendMessage(mHandler.obtainMessage(4, lpMode));
-       	            final String cpuTemp=readOneLine(CPU_TEMP);
-       	            mHandler.sendMessage(mHandler.obtainMessage(5, cpuTemp));
+       	            sb.deleteCharAt(sb.length()-1);
+       	            mHandler.sendMessage(mHandler.obtainMessage(1, sb.toString()));
        	        }
        	    } catch (InterruptedException e) {
        	        return;
@@ -284,6 +304,8 @@ public class CPUInfoService extends Service {
         mCurCPUThread = new CurCPUThread(mView.getHandler());
         mCurCPUThread.start();
 
+        Log.d(TAG, "started CurCPUThread");
+        
         WindowManager wm = (WindowManager)getSystemService(WINDOW_SERVICE);
         wm.addView(mView, params);
     }
@@ -298,6 +320,7 @@ public class CPUInfoService extends Service {
             } catch (InterruptedException e) {
             }
         }
+        Log.d(TAG, "stopped CurCPUThread");
         ((WindowManager)getSystemService(WINDOW_SERVICE)).removeView(mView);
         mView = null;
     }
