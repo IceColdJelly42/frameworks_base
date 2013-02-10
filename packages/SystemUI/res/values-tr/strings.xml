@@ -243,6 +243,4 @@ Sistem denetimleri için tekrar hızlıca aşağı kaydırın."</string>
     <string name="running_processes_item_description_p_s">%1$d processes and %2$d service</string>
     <string name="running_processes_item_description_p_p">%1$d processes and %2$d services</string>
     <string name="running_process_item_user_label">User: %1$s</string>
-    <string name="status_bar_date_formatter">"%2$s
-%1$s"</string>
 </resources>
