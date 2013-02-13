@@ -307,11 +307,7 @@ public class KeyguardHostView extends KeyguardViewBase {
 
         showPrimarySecurityScreen(false);
         updateSecurityViews();
-
-        // Make sure at least this view is focusable in case nothing below it is. Otherwise,
-        // requestFocus() on this view will fail and allow events, such as volume keys, to be
-        // handled by the fallback handler.  See bug 7546960 for details.
-        setFocusableInTouchMode(true);
+    }
 
         mExpandChallengeView = (View) findViewById(R.id.expand_challenge_handle);
         if (mExpandChallengeView != null) {
@@ -887,7 +883,7 @@ public class KeyguardHostView extends KeyguardViewBase {
         mAppWidgetContainer.setVisibility(
                 isSimOrAccount && fullScreenEnabled ? View.GONE : View.VISIBLE);
 
-        if (mSlidingChallengeLayout != null) {
+        if (mSlidingChallengeLayout != null42df15e93d3eb70846270b26c024f1575e82fa06) {
             mSlidingChallengeLayout.setChallengeInteractive(!fullScreenEnabled);
         }
 
