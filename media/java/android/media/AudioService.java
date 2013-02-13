@@ -443,6 +443,8 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
 
     private boolean mDockAudioMediaEnabled = true;
 
+    private int mDockState = Intent.EXTRA_DOCK_STATE_UNDOCKED;
+
     ///////////////////////////////////////////////////////////////////////////
     // Construction
     ///////////////////////////////////////////////////////////////////////////
@@ -3367,6 +3369,13 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                                 mBluetoothA2dpEnabled ?
                                         AudioSystem.FORCE_NONE : AudioSystem.FORCE_NO_BT_A2DP);
                     }
+
+                    synchronized (mSettingsLock) {
+                        AudioSystem.setForceUse(AudioSystem.FOR_DOCK,
+                                mDockAudioMediaEnabled ?
+                                        AudioSystem.FORCE_ANALOG_DOCK : AudioSystem.FORCE_NONE);
+                    }
+
                     // indicate the end of reconfiguration phase to audio HAL
                     AudioSystem.setParameters("restarting=false");
                     break;
@@ -3808,13 +3817,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                         config = AudioSystem.FORCE_BT_CAR_DOCK;
                         break;
                     case Intent.EXTRA_DOCK_STATE_LE_DESK:
-                        synchronized (mSettingsLock) {
-                            if (mDockAudioMediaEnabled) {
-                                config = AudioSystem.FORCE_ANALOG_DOCK;
-                            } else {
-                                config = AudioSystem.FORCE_NONE;
-                            }
-                        }
+                        config = AudioSystem.FORCE_ANALOG_DOCK;
                         break;
                     case Intent.EXTRA_DOCK_STATE_HE_DESK:
                         config = AudioSystem.FORCE_DIGITAL_DOCK;
@@ -3824,7 +3827,14 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                         config = AudioSystem.FORCE_NONE;
                 }
 
-                AudioSystem.setForceUse(AudioSystem.FOR_DOCK, config);
+                // Low end docks have a menu to enable or disable audio
+                // (see mDockAudioMediaEnabled)
+                if (!((dockState == Intent.EXTRA_DOCK_STATE_LE_DESK) ||
+                      ((dockState == Intent.EXTRA_DOCK_STATE_UNDOCKED) &&
+                       (mDockState == Intent.EXTRA_DOCK_STATE_LE_DESK)))) {
+                    AudioSystem.setForceUse(AudioSystem.FOR_DOCK, config);
+                }
+                mDockState = dockState;
             } else if (action.equals(BluetoothA2dp.ACTION_CONNECTION_STATE_CHANGED) && noDelayInATwoDP) {
                 state = intent.getIntExtra(BluetoothProfile.EXTRA_STATE,
                                            BluetoothProfile.STATE_DISCONNECTED);
@@ -5181,18 +5191,23 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
         // top of the stack for the media button event receivers : simply using the top of the
         // stack would make the entry disappear from the RemoteControlDisplay in conditions such as
         // notifications playing during music playback.
-        // crawl the AudioFocus stack until an entry is found with the following characteristics:
+        // Crawl the AudioFocus stack from the top until an entry is found with the following
+        // characteristics:
         // - focus gain on STREAM_MUSIC stream
         // - non-transient focus gain on a stream other than music
         FocusStackEntry af = null;
-        Iterator<FocusStackEntry> stackIterator = mFocusStack.iterator();
-        while(stackIterator.hasNext()) {
-            FocusStackEntry fse = (FocusStackEntry)stackIterator.next();
-            if ((fse.mStreamType == AudioManager.STREAM_MUSIC)
-                    || (fse.mFocusChangeType == AudioManager.AUDIOFOCUS_GAIN)) {
-                af = fse;
-                break;
+        try {
+            for (int index = mFocusStack.size()-1; index >= 0; index--) {
+                FocusStackEntry fse = mFocusStack.elementAt(index);
+                if ((fse.mStreamType == AudioManager.STREAM_MUSIC)
+                        || (fse.mFocusChangeType == AudioManager.AUDIOFOCUS_GAIN)) {
+                    af = fse;
+                    break;
+                }
             }
+        } catch (ArrayIndexOutOfBoundsException e) {
+            Log.e(TAG, "Wrong index accessing audio focus stack when updating RCD: " + e);
+            af = null;
         }
         if (af == null) {
             clearRemoteControlDisplay_syncAfRcs();
@@ -5213,6 +5228,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
             clearRemoteControlDisplay_syncAfRcs();
             return;
         }
+
         // refresh conditions were verified: update the remote controls
         // ok to call: synchronized mAudioFocusLock then on mRCStack, mRCStack is not empty
         updateRemoteControlDisplay_syncAfRcs(infoChangedFlags);
