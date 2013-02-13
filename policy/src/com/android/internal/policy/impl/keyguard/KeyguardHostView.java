@@ -26,7 +26,6 @@ import android.appwidget.AppWidgetHost;
 import android.appwidget.AppWidgetHostView;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProviderInfo;
-import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContentResolver;
@@ -134,6 +133,8 @@ public class KeyguardHostView extends KeyguardViewBase {
         mLockPatternUtils = new LockPatternUtils(context);
         mAppWidgetHost = new AppWidgetHost(
                 context, APPWIDGET_HOST_ID, mOnClickHandler, Looper.myLooper());
+        cleanupAppWidgetIds();
+
         mAppWidgetManager = AppWidgetManager.getInstance(mContext);
         mSecurityModel = new KeyguardSecurityModel(context);
 
@@ -157,6 +158,33 @@ public class KeyguardHostView extends KeyguardViewBase {
         if ((mDisabledFeatures & DevicePolicyManager.KEYGUARD_DISABLE_SECURE_CAMERA) != 0) {
             Log.v(TAG, "Keyguard secure camera disabled by DPM");
         }
+    }
+
+    private void cleanupAppWidgetIds() {
+        // Clean up appWidgetIds that are bound to lockscreen, but not actually used
+        // This is only to clean up after another bug: we used to not call
+        // deleteAppWidgetId when a user manually deleted a widget in keyguard. This code
+        // shouldn't have to run more than once per user. AppWidgetProviders rely on callbacks
+        // that are triggered by deleteAppWidgetId, which is why we're doing this
+        int[] appWidgetIdsInKeyguardSettings = mLockPatternUtils.getAppWidgets();
+        int[] appWidgetIdsBoundToHost = mAppWidgetHost.getAppWidgetIds();
+        for (int i = 0; i < appWidgetIdsBoundToHost.length; i++) {
+            int appWidgetId = appWidgetIdsBoundToHost[i];
+            if (!contains(appWidgetIdsInKeyguardSettings, appWidgetId)) {
+                Log.d(TAG, "Found a appWidgetId that's not being used by keyguard, deleting id "
+                        + appWidgetId);
+                mAppWidgetHost.deleteAppWidgetId(appWidgetId);
+            }
+        }
+    }
+
+    private static boolean contains(int[] array, int target) {
+        for (int value : array) {
+            if (value == target) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private KeyguardUpdateMonitorCallback mUpdateMonitorCallbacks =
@@ -313,7 +341,7 @@ public class KeyguardHostView extends KeyguardViewBase {
         }
     }
 
-    private void updateSecurityView(View view) {
+    private void updateSecurityView(View view) {75b5cfb4a41030333820d072578a288d4ec9899c
         if (view instanceof KeyguardSecurityView) {
             KeyguardSecurityView ksv = (KeyguardSecurityView) view;
             ksv.setKeyguardCallback(mCallback);
@@ -383,7 +411,7 @@ public class KeyguardHostView extends KeyguardViewBase {
         };
 
         @Override
-        public void onRemoveView(View v) {
+        public void onRemoveView(View v, boolean deletePermanently) {
             mUnlimitedWidgets = Settings.System.getBoolean(getContext().getContentResolver(),
                                   Settings.System.LOCKSCREEN_UNLIMITED_WIDGETS, false);
             if (mUnlimitedWidgets) {
@@ -393,6 +421,13 @@ public class KeyguardHostView extends KeyguardViewBase {
             }
             if (numWidgets() < MAX_WIDGETS) {
                 setAddWidgetEnabled(true);
+            }
+            if (deletePermanently) {
+                final int appWidgetId = ((KeyguardWidgetFrame) v).getContentAppWidgetId();
+                if (appWidgetId != AppWidgetManager.INVALID_APPWIDGET_ID &&
+                        appWidgetId != LockPatternUtils.ID_DEFAULT_STATUS_WIDGET) {
+                    mAppWidgetHost.deleteAppWidgetId(appWidgetId);
+                }
             }
         }
     };
