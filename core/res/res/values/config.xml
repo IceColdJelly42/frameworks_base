@@ -1014,8 +1014,8 @@
      -->
     <integer-array name="config_defaultNotificationVibePattern">
         <item>0</item>
-        <item>250</item>
-        <item>250</item>
+        <item>150</item>
+        <item>200</item>
         <item>250</item>
     </integer-array>
 
@@ -1025,9 +1025,9 @@
      -->
     <integer-array name="config_notificationFallbackVibePattern">
         <item>0</item>
-        <item>250</item>
-        <item>250</item>
-        <item>250</item>
+        <item>33</item>
+        <item>150</item>
+        <item>50</item>
     </integer-array>
 
     <!-- Flag indicating if the speed up audio on mt call code should be executed -->
