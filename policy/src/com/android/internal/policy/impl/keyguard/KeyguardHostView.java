@@ -106,6 +106,10 @@ public class KeyguardHostView extends KeyguardViewBase {
 
     private boolean mSafeModeEnabled;
 
+    private boolean mUserSetupCompleted;
+    // User for whom this host view was created
+    private int mUserId;
+
     /*package*/ interface TransportCallback {
         void onListenerDetached();
         void onListenerAttached();
@@ -131,6 +135,7 @@ public class KeyguardHostView extends KeyguardViewBase {
     public KeyguardHostView(Context context, AttributeSet attrs) {
         super(context, attrs);
         mLockPatternUtils = new LockPatternUtils(context);
+        mUserId = mLockPatternUtils.getCurrentUser();
         mAppWidgetHost = new AppWidgetHost(
                 context, APPWIDGET_HOST_ID, mOnClickHandler, Looper.myLooper());
         cleanupAppWidgetIds();
@@ -375,14 +380,14 @@ public class KeyguardHostView extends KeyguardViewBase {
     @Override
     protected void onAttachedToWindow() {
         super.onAttachedToWindow();
-        mAppWidgetHost.startListening();
+        mAppWidgetHost.startListeningAsUser(mUserId);
         KeyguardUpdateMonitor.getInstance(mContext).registerCallback(mUpdateMonitorCallbacks);
     }
 
     @Override
     protected void onDetachedFromWindow() {
         super.onDetachedFromWindow();
-        mAppWidgetHost.stopListening();
+        mAppWidgetHost.stopListeningAsUser(mUserId);
         KeyguardUpdateMonitor.getInstance(mContext).removeCallback(mUpdateMonitorCallbacks);
     }
 
