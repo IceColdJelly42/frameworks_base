@@ -811,7 +811,7 @@
         <ul>
          
           <li>
-            <a href="<?cs var:toroot ?>training/perf-tips.html"
+            <a href="<?cs var:toroot ?>training/articles/perf-tips.html"
                description=
                "How to optimize your app's performance in various ways to improve its
                responsiveness and battery efficiency."
@@ -887,7 +887,7 @@
           </li>
          
           <li>
-            <a href="<?cs var:toroot ?>training/perf-anr.html"
+            <a href="<?cs var:toroot ?>training/articles/perf-anr.html"
                description=
                "How to keep your app responsive to user interaction so the UI does not lock-up and
                display an &quot;Application Not Responding&quot; dialog."
@@ -895,10 +895,16 @@
           </li>
          
           <li>
-            <a href="<?cs var:toroot ?>training/perf-jni.html"
+            <a href="<?cs var:toroot ?>training/articles/perf-jni.html"
                description=
                "How to efficiently use the Java Native Interface with the Android NDK."
               >JNI Tips</a>
+          </li>
+          <li>
+            <a href="<?cs var:toroot ?>training/articles/smp.html"
+               description=
+               "Tips for coding Android apps on symmetric multiprocessor systems."
+              >SMP Primer for Android</a>
           </li>
         </ul>
       </li> <!-- end of Performance -->
@@ -915,7 +921,7 @@
         <ul>
 
           <li>
-            <a href="<?cs var:toroot ?>training/security-tips.html"
+            <a href="<?cs var:toroot ?>training/articles/security-tips.html"
                description=
                "How to perform various tasks and keep your app's data and your user's data secure."
               >Security Tips</a>
@@ -948,6 +954,30 @@
           </a>
         </div>
         <ul>
+          <li class="nav-section">
+          <div class="nav-section-header"><a href="<?cs var:toroot ?>training/in-app-billing/index.html"
+             description="How to sell in-app products from your application using In-app Billing.">
+                Selling In-app Products
+              </a></div>
+            <ul>
+              <li><a href="<?cs var:toroot ?>training/in-app-billing/preparing-iab-app.html">
+                <span class="en">Preparing Your App</span>
+              </a>
+              </li>
+              <li><a href="<?cs var:toroot ?>training/in-app-billing/list-iab-products.html">
+                <span class="en">Establishing Products for Sale</span>
+              </a>
+              </li>
+              <li><a href="<?cs var:toroot ?>training/in-app-billing/purchase-iab-products.html">
+                <span class="en">Purchasing Products</span>
+              </a>
+              </li>
+              <li><a href="<?cs var:toroot ?>training/in-app-billing/test-iab-app.html">
+                <span class="en">Testing Your App</span>
+              </a>
+              </li>
+            </ul>
+          </li>
          
           <li class="nav-section">
             <div class="nav-section-header">
