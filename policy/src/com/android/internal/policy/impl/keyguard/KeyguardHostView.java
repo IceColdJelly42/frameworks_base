@@ -306,7 +306,6 @@ public class KeyguardHostView extends KeyguardViewBase {
 
         showPrimarySecurityScreen(false);
         updateSecurityViews();
-    }
 
         mExpandChallengeView = (View) findViewById(R.id.expand_challenge_handle);
         if (mExpandChallengeView != null) {
@@ -357,7 +356,7 @@ public class KeyguardHostView extends KeyguardViewBase {
         }
     }
 
-    private void updateSecurityView(View view) {75b5cfb4a41030333820d072578a288d4ec9899c
+    private void updateSecurityView(View view) {
         if (view instanceof KeyguardSecurityView) {
             KeyguardSecurityView ksv = (KeyguardSecurityView) view;
             ksv.setKeyguardCallback(mCallback);
@@ -882,7 +881,7 @@ public class KeyguardHostView extends KeyguardViewBase {
         mAppWidgetContainer.setVisibility(
                 isSimOrAccount && fullScreenEnabled ? View.GONE : View.VISIBLE);
 
-        if (mSlidingChallengeLayout != null42df15e93d3eb70846270b26c024f1575e82fa06) {
+        if (mSlidingChallengeLayout != null) {
             mSlidingChallengeLayout.setChallengeInteractive(!fullScreenEnabled);
         }
 
