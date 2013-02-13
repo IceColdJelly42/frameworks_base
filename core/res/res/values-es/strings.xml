@@ -920,6 +920,12 @@ Toca Aceptar para continuar o Cancelar para permanecer en la página actual."</s
     <string name="weeks">semanas</string>
     <string name="year">año</string>
     <string name="years">años</string>
+    <!-- no translation found for duration_seconds:one (6962015528372969481) -->
+    <!-- no translation found for duration_seconds:other (1886107766577166786) -->
+    <!-- no translation found for duration_minutes:one (4915414002546085617) -->
+    <!-- no translation found for duration_minutes:other (3165187169224908775) -->
+    <!-- no translation found for duration_hours:one (8917467491248809972) -->
+    <!-- no translation found for duration_hours:other (3863962854246773930) -->
     <string name="relative_time">%1$s, %2$s</string>
     <string name="Noon">Mediodía</string>
     <string name="Midnight">Medianoche</string>
