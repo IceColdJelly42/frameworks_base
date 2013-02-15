@@ -124,7 +124,7 @@ public class BridgePowerManager implements IPowerManager {
     public void cpuBoost(int duration) throws RemoteException {
         // pass for now
     }
-    
+
     @Override
     public int getCurrentScreenBrightnessValue(){
         // pass for now
@@ -132,12 +132,12 @@ public class BridgePowerManager implements IPowerManager {
     }
 
     @Override
-    public int getCurrentButtonBrightnessValue(){       
+    public int getCurrentButtonBrightnessValue(){
         // pass for now
         return -1;
     }
 
-    @Override    
+    @Override
     public boolean isUsingAutoBrightness(){
         // pass for now
         return false;

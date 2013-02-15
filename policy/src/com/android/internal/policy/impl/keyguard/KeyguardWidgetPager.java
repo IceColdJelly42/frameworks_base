@@ -52,11 +52,6 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
     protected static float OVERSCROLL_MAX_ROTATION = 30;
     private static final boolean PERFORM_OVERSCROLL_ROTATION = true;
 
-    private static final String[] CLOCK_WIDGET_PACKAGES = new String[] {
-        "com.cyanogenmod.lockclock",
-        "com.android.deskclock"
-    };
-
     protected KeyguardViewStateManager mViewStateManager;
     private LockPatternUtils mLockPatternUtils;
 
@@ -76,6 +71,7 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
     private Callbacks mCallbacks;
 
     private int mWidgetToResetAfterFadeOut;
+    protected boolean mShowingInitialHints = false;
 
     // A temporary handle to the Add-Widget view
     private View mAddWidgetView;
@@ -141,16 +137,6 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
             ViewGroup vg = (ViewGroup) newPage;
             if (vg.getChildAt(0) instanceof KeyguardStatusView) {
                 showingStatusWidget = true;
-            } else if (vg.getChildAt(0) instanceof AppWidgetHostView) {
-                AppWidgetProviderInfo info =
-                        ((AppWidgetHostView) vg.getChildAt(0)).getAppWidgetInfo();
-                String widgetPackage = info.provider.getPackageName();
-                for (String packageName : CLOCK_WIDGET_PACKAGES) {
-                    if (packageName.equals(widgetPackage)) {
-                        showingStatusWidget = true;
-                        break;
-                    }
-                }
             }
         }
 
@@ -265,7 +251,6 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
     public void addWidget(View widget) {
         addWidget(widget, -1);
     }
-
 
     public void onRemoveView(View v, final boolean deletePermanently) {
         final int appWidgetId = ((KeyguardWidgetFrame) v).getContentAppWidgetId();
@@ -487,12 +472,21 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
     private void updatePageAlphaValues(int screenCenter) {
     }
 
-    public float getAlphaForPage(int screenCenter, int index) {
-        return 1f;
+    public float getAlphaForPage(int screenCenter, int index, boolean showSidePages) {
+        if (showSidePages) {
+            return 1f;
+        } else {
+            return index == mCurrentPage ? 1.0f : 0f;
+        }
     }
 
-    public float getOutlineAlphaForPage(int screenCenter, int index) {
-        return getAlphaForPage(screenCenter, index) * KeyguardWidgetFrame.OUTLINE_ALPHA_MULTIPLIER;
+    public float getOutlineAlphaForPage(int screenCenter, int index, boolean showSidePages) {
+        if (showSidePages) {
+            return getAlphaForPage(screenCenter, index, showSidePages)
+                    * KeyguardWidgetFrame.OUTLINE_ALPHA_MULTIPLIER;
+        } else {
+            return 0f;
+        }
     }
 
     protected boolean isOverScrollChild(int index, float scrollProgress) {
@@ -591,14 +585,14 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
     }
 
     public void showInitialPageHints() {
+        mShowingInitialHints = true;
         int count = getChildCount();
         for (int i = 0; i < count; i++) {
             KeyguardWidgetFrame child = getWidgetPageAt(i);
             if (i != mCurrentPage) {
                 if (!Settings.System.getBoolean(getContext().getContentResolver(),
                         Settings.System.LOCKSCREEN_HIDE_INITIAL_PAGE_HINTS, false)) {
-                    child.fadeFrame(this, true, KeyguardWidgetFrame.OUTLINE_ALPHA_MULTIPLIER,
-                            CHILDREN_OUTLINE_FADE_IN_DURATION);
+                    child.setBackgroundAlpha(KeyguardWidgetFrame.OUTLINE_ALPHA_MULTIPLIER);
                 }
                 child.setContentAlpha(0f);
             } else {
@@ -606,10 +600,6 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
                 child.setContentAlpha(1f);
             }
         }
-    }
-
-    public void showSidePageHints() {
-        animateOutlinesAndSidePages(true, -1);
     }
 
     @Override
@@ -688,7 +678,7 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
         for (int i = 0; i < count; i++) {
             float finalContentAlpha;
             if (show) {
-                finalContentAlpha = getAlphaForPage(mScreenCenter, i);
+                finalContentAlpha = getAlphaForPage(mScreenCenter, i, true);
             } else if (!show && i == curPage) {
                 finalContentAlpha = 1f;
             } else {
@@ -700,7 +690,7 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
             ObjectAnimator a = ObjectAnimator.ofPropertyValuesHolder(child, alpha);
             anims.add(a);
 
-            float finalOutlineAlpha = show ? getOutlineAlphaForPage(mScreenCenter, i) : 0f;
+            float finalOutlineAlpha = show ? getOutlineAlphaForPage(mScreenCenter, i, true) : 0f;
             child.fadeFrame(this, show, finalOutlineAlpha, duration);
         }
 
@@ -726,6 +716,7 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
                         frame.resetSize();
                     }
                     mWidgetToResetAfterFadeOut = -1;
+                    mShowingInitialHints = false;
                 }
                 updateWidgetFramesImportantForAccessibility();
             }

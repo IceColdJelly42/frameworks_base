@@ -242,7 +242,7 @@ public class StorageNotification extends StorageEventListener {
         } else if (newState.equals(Environment.MEDIA_BAD_REMOVAL)) {
             /*
              * Storage has been removed unsafely. Show bad removal media notification,
-             * and disable UMS notification if the removed storage is the primary storage. 
+             * and disable UMS notification if the removed storage is the primary storage.
              */
             setMediaStorageNotification(
                     com.android.internal.R.string.ext_media_badremoval_notification_title,
