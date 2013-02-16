@@ -101,8 +101,6 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  *
@@ -485,19 +483,18 @@ public class QuickSettings {
                         if (mJustRecorded && !mIsRecording && !mIsPlaying) {
                             playStateName = mContext.getResources().getString(R.string.quick_settings_recordingcap);
                             playStateIcon = R.drawable.ic_qs_saved;
-                        } else {
-                            if (mIsPlaying && !mIsRecording) {
-                                playStateName = mContext.getResources().getString(R.string.quick_settings_playing);
-                                playStateIcon = R.drawable.ic_qs_playing;
-                            }
-                            if (mIsRecording && !mIsPlaying) {
-                                playStateName = mContext.getResources().getString(R.string.quick_settings_recording);
-                                playStateIcon = R.drawable.ic_qs_recording;
-                            }
-                            if (!mIsRecording && !mIsPlaying && !mJustRecorded) {
-                                playStateName = mContext.getResources().getString(R.string.quick_settings_quickrecord);
-                                playStateIcon = R.drawable.ic_qs_quickrecord;
-                            }
+                        }
+                        if (mIsPlaying && !mIsRecording) {
+                            playStateName = mContext.getResources().getString(R.string.quick_settings_playing);
+                            playStateIcon = R.drawable.ic_qs_playing;
+                        }
+                        if (mIsRecording && !mIsPlaying) {
+                            playStateName = mContext.getResources().getString(R.string.quick_settings_recording);
+                            playStateIcon = R.drawable.ic_qs_recording;
+                        }
+                        if (!mIsRecording && !mIsPlaying && !mJustRecorded) {
+                            playStateName = mContext.getResources().getString(R.string.quick_settings_quickrecord);
+                            playStateIcon = R.drawable.ic_qs_quickrecord;
                         }
                     } else {
                         playStateName = mContext.getResources().getString(R.string.quick_settings_nofile);
@@ -567,18 +564,16 @@ public class QuickSettings {
         mRecorder.start();
         mIsRecording = true;
         queryRecordingInformation();
-        new Timer().schedule(new TimerTask() {
-            @Override
-                public void run() {
-                    if (mIsRecording) {
-                    stopRecording();
-                    }
+        mHandler.postDelayed(new Runnable() {
+            public void run() {
+                if (mIsRecording) {
+                stopRecording();
                 }
+            }
         }, 60000);
     }
 
     private void stopRecording() {
-        if (mIsRecording)
         mRecorder.stop();
         mRecorder.release();
         mRecorder = null;
