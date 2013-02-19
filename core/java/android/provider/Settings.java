@@ -2646,7 +2646,6 @@ public final class Settings {
         };
 
         /**
-
          * Custom navring icons
          *
          * @hide
