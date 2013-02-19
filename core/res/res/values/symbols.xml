@@ -1838,6 +1838,8 @@
   <java-symbol type="bool" name="config_forceDisableHardwareKeyboard" />
   <java-symbol type="bool" name="config_hasRotationLockSwitch" />
 
+  <java-symbol type="string" name="config_legacyUmsLunFile" />
+
   <!-- Always show battery status on lockscreen -->
   <java-symbol type="string" name="lockscreen_always_battery" />
   <java-symbol type="string" name="lockscreen_always_low_battery" />
