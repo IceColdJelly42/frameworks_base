@@ -304,10 +304,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     private RefreshCallback mTorchCallback;
     private State mTorchState = new State();
 
-    private QuickSettingsTileView mQuickRecordTile;
-    private RefreshCallback mQuickRecordCallback;
-    private State mQuickRecordState = new State();
-
     private QuickSettingsTileView mWifiTetherTile;
     private RefreshCallback mWifiTetherCallback;
     private State mWifiTetherState = new State();
@@ -1315,21 +1311,6 @@ class QuickSettingsModel implements BluetoothStateChangeCallback,
     void refreshTorchTile() {
         if (mTorchTile != null) {
             onTorchChanged();
-        }
-    }
-
-    // Quick Record
-    void addQuickRecordTile(QuickSettingsTileView view, RefreshCallback cb) {
-        mQuickRecordTile = view;
-        mQuickRecordCallback = cb;
-        mQuickRecordCallback.refreshView(mQuickRecordTile, mQuickRecordState);
-    }
-
-    void setQuickRecordTileInfo(String playStateName, Integer playStateIcon) {
-        if (mQuickRecordCallback != null) {
-            mQuickRecordState.label = playStateName;
-            mQuickRecordState.iconId = playStateIcon;
-            mQuickRecordCallback.refreshView(mQuickRecordTile, mQuickRecordState);
         }
     }
 
