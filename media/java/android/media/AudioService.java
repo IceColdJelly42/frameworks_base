@@ -519,7 +519,8 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
         intentFilter.addAction(Intent.ACTION_USER_BACKGROUND);
         intentFilter.addAction(Intent.ACTION_USER_SWITCHED);
         intentFilter.addAction(Intent.ACTION_WIFI_DISPLAY_AUDIO);
-
+        intentFilter.addAction(Intent.ACTION_HEADSET_PLUG);
+        
         intentFilter.addAction(Intent.ACTION_CONFIGURATION_CHANGED);
         // Register a configuration change listener only if requested by system properties
         // to monitor orientation changes (off by default)
@@ -3880,6 +3881,36 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                         }
                     }
                 }
+            } else if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
+                state = intent.getIntExtra("state", 0);
+                if (state == 1) {
+                    // Headset plugged in
+                    Log.d(TAG, "Headset plugged in");
+                    // Avoid connection glitches
+                    if (noDelayInATwoDP) {
+                        setBluetoothA2dpOnInt(false);
+                    }
+                    for (int stream = 0; stream < AudioSystem.getNumStreamTypes(); stream++) {
+                        if (stream == mStreamVolumeAlias[stream]) {
+                            VolumeStreamState streamState = mStreamStates[mStreamVolumeAlias[stream]];
+                            device = getDeviceForStream(stream);
+                            // apply stored value for device
+                            streamState.applyDeviceVolume(device);
+                        }
+                    }
+                } else {
+                    // Headset disconnected
+                    Log.d(TAG, "Headset unplugged");
+                    // Restore volumes
+                    for (int stream = 0; stream < AudioSystem.getNumStreamTypes(); stream++) {
+                        if (stream == mStreamVolumeAlias[stream]) {
+                            VolumeStreamState streamState = mStreamStates[mStreamVolumeAlias[stream]];
+                            device = getDeviceForStream(stream);
+                            // apply stored value for device
+                            streamState.applyDeviceVolume(device);
+                        }
+                    }
+                } 
             } else if (action.equals(Intent.ACTION_USB_AUDIO_ACCESSORY_PLUG) ||
                            action.equals(Intent.ACTION_USB_AUDIO_DEVICE_PLUG)) {
                 state = intent.getIntExtra("state", 0);
