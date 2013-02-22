@@ -2729,10 +2729,9 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                 }
                 // retrieve current volume for device
                 String name = getSettingNameForDevice(false /* lastAudible */, device);
-                // if no volume stored for current stream and device, use default volume if default
-                // device, continue otherwise
-                int defaultIndex = (device == AudioSystem.DEVICE_OUT_DEFAULT) ?
-                                        AudioManager.DEFAULT_STREAM_VOLUME[mStreamType] : -1;
+                // if no volume stored for current stream and device, use default volume
+                int defaultIndex = AudioManager.DEFAULT_STREAM_VOLUME[mStreamType];
+                
                 int index = Settings.System.getIntForUser(
                         mContentResolver, name, defaultIndex, UserHandle.USER_CURRENT);
                 if (index == -1) {
@@ -3971,6 +3970,17 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                         0,
                         null,
                         SAFE_VOLUME_CONFIGURE_TIMEOUT_MS);
+                 
+                // Restore volumes
+                Log.d(TAG, "Restore volume");
+            	for (int stream = 0; stream < AudioSystem.getNumStreamTypes(); stream++) {
+      	    		if (stream == mStreamVolumeAlias[stream]) {
+              			VolumeStreamState streamState = mStreamStates[mStreamVolumeAlias[stream]];
+                		device = getDeviceForStream(stream);
+                		// apply stored value for device
+                		streamState.applyDeviceVolume(device);
+             		}
+        		}
             } else if (action.equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 if (!intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) {
                     // a package is being removed, not replaced
