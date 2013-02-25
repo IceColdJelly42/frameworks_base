@@ -308,12 +308,12 @@ public final class PowerManagerService extends IPowerManager.Stub
 
     // The screen off timeout setting value in milliseconds.
     private int mScreenOffTimeoutSetting;
-    
-    // Eos settings - override config for ElectronBeam on or off
+
+    // Slim settings - override config for ElectronBeam
     // used here to send values to DispLayPowerController handler
     // from SettingsObserver
-    private boolean mElectronBeamOnEnabled;
     private boolean mElectronBeamOffEnabled;
+    private int mElectronBeamMode;
 
     // The maximum allowable screen off timeout according to the device
     // administration policy.  Overrides other settings.
@@ -507,9 +507,8 @@ public final class PowerManagerService extends IPowerManager.Stub
                     Settings.System.SYSTEM_POWER_ENABLE_CRT_OFF),
                     false, mSettingsObserver, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.SYSTEM_POWER_ENABLE_CRT_ON),
+                    Settings.System.SYSTEM_POWER_CRT_MODE),
                     false, mSettingsObserver, UserHandle.USER_ALL);
-
             // Go.
             readConfigurationLocked();
             updateSettingsLocked();
@@ -557,10 +556,11 @@ public final class PowerManagerService extends IPowerManager.Stub
                 Settings.Global.STAY_ON_WHILE_PLUGGED_IN, BatteryManager.BATTERY_PLUGGED_AC);
                 
         // respect default config values
-        mElectronBeamOnEnabled = Settings.System.getInt(resolver,
-                Settings.System.SYSTEM_POWER_ENABLE_CRT_ON, 0) == 1;
-        mElectronBeamOffEnabled = Settings.System.getInt(resolver,
-                Settings.System.SYSTEM_POWER_ENABLE_CRT_OFF, mElectronBeamFadesConfig ? 0 : 1) == 1;
+        mElectronBeamOffEnabled = Settings.System.getIntForUser(resolver,
+                Settings.System.SYSTEM_POWER_ENABLE_CRT_OFF,ž
+                mElectronBeamFadesConfig ? 0 : 1) == 1;
+        mElectronBeamMode = Settings.System.getIntForUser(resolver,
+                Settings.System.SYSTEM_POWER_CRT_MODE, 0) == 1;
 
         final int oldScreenBrightnessSetting = mScreenBrightnessSetting;
         mScreenBrightnessSetting = Settings.System.getIntForUser(resolver,
@@ -1670,8 +1670,9 @@ public final class PowerManagerService extends IPowerManager.Stub
             mDisplayPowerRequest.useProximitySensor = shouldUseProximitySensorLocked();
 
             mDisplayPowerRequest.blockScreenOn = mScreenOnBlocker.isHeld();
-            mDisplayPowerRequest.electronBeamOnEnabled = mElectronBeamOnEnabled;
+
             mDisplayPowerRequest.electronBeamOffEnabled = mElectronBeamOffEnabled;
+            mDisplayPowerRequest.electronBeamMode = mElectronBeamMode;
 
             mDisplayReady = mDisplayPowerController.requestPowerState(mDisplayPowerRequest,
                     mRequestWaitForNegativeProximity);
