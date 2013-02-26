@@ -138,6 +138,9 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
     @Override
     public void onPageSwitched(View newPage, int newPageIndex) {
         boolean showingStatusWidget = false;
+        boolean hideStatusBarInfo = Settings.System.getBoolean(getContext().getContentResolver(),
+                        Settings.System.NAVIGATION_BAR_STATUS_HIDE_LOCKSCREEN_INFO, false);
+                        
         if (newPage instanceof ViewGroup) {
             ViewGroup vg = (ViewGroup) newPage;
             if (vg.getChildAt(0) instanceof KeyguardStatusView) {
@@ -154,12 +157,24 @@ public class KeyguardWidgetPager extends PagedView implements PagedView.PageSwit
                 }
             }
         }
-
-        // Disable the status bar clock if we're showing the default status widget
-        if (showingStatusWidget) {
+        
+        // maxwen: if requested hide system info and clock on lockscreen
+        // notifications will still be visible and statusbar is fully functional
+        if (hideStatusBarInfo){
             setSystemUiVisibility(getSystemUiVisibility() | View.STATUS_BAR_DISABLE_CLOCK);
+            setSystemUiVisibility(getSystemUiVisibility() | View.STATUS_BAR_DISABLE_SYSTEM_INFO);            
         } else {
             setSystemUiVisibility(getSystemUiVisibility() & ~View.STATUS_BAR_DISABLE_CLOCK);
+            setSystemUiVisibility(getSystemUiVisibility() & ~View.STATUS_BAR_DISABLE_SYSTEM_INFO);            
+        }
+        
+        if(!hideStatusBarInfo){
+        	// Disable the status bar clock if we're showing the default status widget
+        	if (showingStatusWidget) {
+        		setSystemUiVisibility(getSystemUiVisibility() | View.STATUS_BAR_DISABLE_CLOCK);
+        	} else {
+            	setSystemUiVisibility(getSystemUiVisibility() & ~View.STATUS_BAR_DISABLE_CLOCK);
+        	}
         }
 
         // Extend the display timeout if the user switches pages

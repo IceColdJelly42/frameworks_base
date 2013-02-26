@@ -2783,7 +2783,13 @@ public final class Settings {
          */
         public static final String NAVIGATION_BAR_SHOW_NOW = "navigation_bar_show_now";
 
-	/**
+
+         /**
+          * Used as a flag to determine if we are showing the StatusBar information (clock and system info) on the lockscreen. Notifications will still be visible
+          */
+         public static final String NAVIGATION_BAR_STATUS_HIDE_LOCKSCREEN_INFO = "navigation_bar_status_hide_lockscreen_info";
+
+    	 /**
          * Show the NavBar dialog in Power menu
          * @hide
          */
