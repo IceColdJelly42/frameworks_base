@@ -49,15 +49,15 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import com.android.systemui.ExpandHelper;
 import com.android.systemui.R;
+import com.android.systemui.statusbar.phone.PanelBar;
+import com.android.systemui.statusbar.phone.QuickSettings;
 import com.android.systemui.statusbar.phone.QuickSettingsContainerView;
 import com.android.systemui.statusbar.phone.SettingsPanelView;
 import com.android.systemui.statusbar.policy.NotificationRowLayout;
-import com.android.systemui.statusbar.toggles.ToggleManager;
 
 public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
         View.OnClickListener {
@@ -84,7 +84,7 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
     Interpolator mDecelerateInterpolator = new DecelerateInterpolator();
 
     // settings
-    ToggleManager mToggleManager;
+    QuickSettings mQS;
     boolean mHasSettingsPanel, mHasFlipSettings;
     SettingsPanelView mSettingsPanel;
     View mFlipSettingsView;
@@ -116,10 +116,11 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
         // Since we are putting QuickSettings inside the NoticationPanel for TabletBar.
         // we can't set the services on inflate.  Need to wait until the StatusBar gets attached to
         // notification Panel.
-        if (mToggleManager != null && mBar != null) {
-            mToggleManager.setControllers(mBar.mBluetoothController,mBar.mNetworkController, mBar.mBatteryController,
-                mBar.mLocationController, null);
-            mToggleManager.updateSettings();
+        if (mQS != null && mBar != null) {
+            mQS.setService(mBar);
+            mQS.setBar(mBar.mStatusBarView);
+            mQS.setup(mBar.mNetworkController, mBar.mBluetoothController, mBar.mBatteryController,
+                mBar.mLocationController);
         }
     }
 
@@ -204,23 +205,21 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
                 }
             }
 
-            mSettingsContainer = (QuickSettingsContainerView)
-                    findViewById(R.id.quick_settings_container);
-
             // wherever you find it, Quick Settings needs a container to survive
-            mToggleManager = new ToggleManager(mContext);
-            mToggleManager.setContainer((LinearLayout) findViewById(R.id.quick_toggles),
-                    ToggleManager.STYLE_TRADITIONAL);
             mSettingsContainer = (QuickSettingsContainerView) findViewById(R.id.quick_settings_container);
             if (mSettingsContainer != null) {
-                mToggleManager.setContainer(mSettingsContainer, ToggleManager.STYLE_TILE);
+                mQS = new QuickSettings(mContext, mSettingsContainer);
                 if (!mNotificationPanelIsFullScreenWidth) {
                     mSettingsContainer.setSystemUiVisibility(
                             View.STATUS_BAR_DISABLE_NOTIFICATION_TICKER
                             | View.STATUS_BAR_DISABLE_SYSTEM_INFO);
                 }
+                if (mSettingsPanel != null) {
+                    mSettingsPanel.setQuickSettings(mQS);
+                }
+            } else {
+                mQS = null; // fly away, be free
             }
-            mToggleManager.updateSettings();
         }
     }
 
@@ -243,13 +242,11 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
 
     private View.OnClickListener mSettingsButtonListener = new View.OnClickListener() {
         public void onClick(View v) {
-            if (mToggleManager != null && mToggleManager.shouldFlipToSettings()) {
-                if (mHasSettingsPanel) {
-                    animateExpandSettingsPanel();
-                } else {
-                    startActivityDismissingKeyguard(
-                            new Intent(android.provider.Settings.ACTION_SETTINGS), true);
-                }
+            if (mHasSettingsPanel) {
+                animateExpandSettingsPanel();
+            } else {
+                startActivityDismissingKeyguard(
+                        new Intent(android.provider.Settings.ACTION_SETTINGS), true);
             }
         }
     };
@@ -286,7 +283,7 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
         }
         if (show && !mHasClearableNotifications) { // go to settings panel is no notifications
             flipToSettings();
-        } else if(show) {
+        } else {
             flipToNotifications();
         }
     }
@@ -422,9 +419,6 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
     }
 
     public void switchToSettings() {
-        if(mToggleManager != null && mToggleManager.getStyle() != ToggleManager.STYLE_TILE) {
-            return;
-        }
         mFlipSettingsView.setScaleX(1f);
         mFlipSettingsView.setVisibility(View.VISIBLE);
         mSettingsButton.setVisibility(View.GONE);
@@ -436,9 +430,6 @@ public class NotificationPanel extends RelativeLayout implements StatusBarPanel,
     }
 
     public void flipToSettings() {
-        if(mToggleManager != null && mToggleManager.getStyle() != ToggleManager.STYLE_TILE) {
-            return;
-        }
         if (mFlipSettingsViewAnim != null) mFlipSettingsViewAnim.cancel();
         if (mScrollViewAnim != null) mScrollViewAnim.cancel();
         if (mSettingsButtonAnim != null) mSettingsButtonAnim.cancel();
