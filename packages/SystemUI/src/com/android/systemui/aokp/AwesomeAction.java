@@ -269,11 +269,12 @@ public class AwesomeAction {
                 takeScreenshot();
                 break;
             case INT_ACTION_TORCH:
-                Intent intentTorch = new Intent("android.intent.action.MAIN");
+                mContext.sendBroadcast(new Intent("net.cactii.flash2.TOGGLE_FLASHLIGHT"));
+                /*Intent intentTorch = new Intent("android.intent.action.MAIN");
                 intentTorch.setComponent(ComponentName.unflattenFromString("com.aokp.Torch/.TorchActivity"));
                 intentTorch.addCategory("android.intent.category.LAUNCHER");
                 intentTorch.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intentTorch);
+                mContext.startActivity(intentTorch);*/
                 break;
             case INT_ACTION_TODAY:
                 long startMillis = System.currentTimeMillis();
