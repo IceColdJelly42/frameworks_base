@@ -3604,6 +3604,11 @@ public final class Settings {
          * @hide
          */
         public static final String TOGGLES_STYLE = "toggls_style";
+
+        /**
+         * @hide
+         */        
+        public static final String FAST_CHARGE_STATE = "fast_charge_state";
     }
 
     /**

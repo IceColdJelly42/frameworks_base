@@ -5,6 +5,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.FileObserver;
+import android.provider.Settings;
+import android.util.Log;
 
 import com.android.systemui.R;
 
@@ -15,19 +17,30 @@ import java.io.IOException;
 
 public class FastChargeToggle extends StatefulToggle {
 
+	private static String TAG = "FastChargeToggle";
     private String mFastChargePath;
     private FileObserver mObserver;
+    private Context mContext;
 
     private boolean mFastChargeEnabled = false;
 
     @Override
     protected void init(Context c, int style) {
         super.init(c, style);
+        
+        mContext = c;
         mFastChargePath = c.getString(com.android.internal.R.string.config_fastChargePath);
+        mFastChargeEnabled = Settings.System.getBoolean(mContext.getContentResolver(),
+                Settings.System.FAST_CHARGE_STATE, false);
+        
+        Log.d(TAG, "saved fast charge value="+ mFastChargeEnabled);
         new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(Void... params) {
+            	// sync with saved setting
+            	setFastCharge(mFastChargeEnabled);
+            	
                 setEnabledState(mFastChargeEnabled = isFastChargeOn());
                 return null;
             }
@@ -78,11 +91,16 @@ public class FastChargeToggle extends StatefulToggle {
     }
 
     private void setFastCharge(final boolean on) {
+        Log.d(TAG, "set fast charge value="+ on);
+        
         Intent fastChargeIntent = new Intent("com.aokp.romcontrol.ACTION_CHANGE_FCHARGE_STATE");
         fastChargeIntent.setPackage("com.aokp.romcontrol");
         fastChargeIntent.putExtra("newState", on);
         mContext.sendBroadcast(fastChargeIntent);
         scheduleViewUpdate();
+        
+        // update setting to current value
+        Settings.System.putBoolean(mContext.getContentResolver(), Settings.System.FAST_CHARGE_STATE, on);
     }
 
     private boolean isFastChargeOn() {
