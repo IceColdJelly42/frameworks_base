@@ -557,10 +557,12 @@ public final class PowerManagerService extends IPowerManager.Stub
                 
         // respect default config values
         mElectronBeamOffEnabled = Settings.System.getIntForUser(resolver,
-                Settings.System.SYSTEM_POWER_ENABLE_CRT_OFF,ž
-                mElectronBeamFadesConfig ? 0 : 1) == 1;
+                Settings.System.SYSTEM_POWER_ENABLE_CRT_OFF,
+                mElectronBeamFadesConfig ? 0 : 1,
+                UserHandle.USER_CURRENT) == 1;
         mElectronBeamMode = Settings.System.getIntForUser(resolver,
-                Settings.System.SYSTEM_POWER_CRT_MODE, 0) == 1;
+                Settings.System.SYSTEM_POWER_CRT_MODE,
+                0, UserHandle.USER_CURRENT);
 
         final int oldScreenBrightnessSetting = mScreenBrightnessSetting;
         mScreenBrightnessSetting = Settings.System.getIntForUser(resolver,
