@@ -55,7 +55,7 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
-import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
@@ -89,7 +89,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     private boolean mWaitingForWindowAnimation;
     private long mWindowAnimationStartTime;
 
-    private Button mRecentsKillAllButton;
+    private ImageView mRecentsKillAllButton;
     private LinearColorBar mRamUsageBar;
 
     private RecentTasksLoader mRecentTasksLoader;
@@ -911,7 +911,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             }
         }
 
-        mRecentsKillAllButton = (Button) findViewById(R.id.recents_kill_all_button);
+        mRecentsKillAllButton = (ImageView) findViewById(R.id.recents_kill_all_button);
         if (mRecentsKillAllEnabled) {
             if (mRecentsKillAllButton != null) {
                 mRecentsKillAllButton.setOnClickListener(new OnClickListener() {
