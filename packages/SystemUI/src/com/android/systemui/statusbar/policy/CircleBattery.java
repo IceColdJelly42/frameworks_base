@@ -142,6 +142,7 @@ public class CircleBattery extends ImageView {
 
             mActivated = (batteryStyle == SbBatteryController.BATTERY_STYLE_CIRCLE ||
                           batteryStyle == SbBatteryController.BATTERY_STYLE_CIRCLE_PERCENT ||
+                          batteryStyle == SbBatteryController.BATTERY_STYLE_DOTTED_CIRCLE ||
                           batteryStyle == SbBatteryController.BATTERY_STYLE_DOTTED_CIRCLE_PERCENT);
             mPercentage = (batteryStyle == SbBatteryController.BATTERY_STYLE_CIRCLE_PERCENT ||
                            batteryStyle == SbBatteryController.BATTERY_STYLE_DOTTED_CIRCLE_PERCENT);
@@ -275,7 +276,8 @@ public class CircleBattery extends ImageView {
             usePaint = mPaintRed;
         }
         usePaint.setAntiAlias(true);
-        if (batteryStyle == SbBatteryController.BATTERY_STYLE_DOTTED_CIRCLE_PERCENT) {
+        if (batteryStyle == SbBatteryController.BATTERY_STYLE_DOTTED_CIRCLE_PERCENT ||
+            batteryStyle == SbBatteryController.BATTERY_STYLE_DOTTED_CIRCLE) {
             // change usePaint from solid to dashed
             usePaint.setPathEffect(new DashPathEffect(new float[]{3,2},0));
         }else {
