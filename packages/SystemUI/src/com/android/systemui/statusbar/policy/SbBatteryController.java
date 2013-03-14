@@ -148,6 +148,12 @@ public class SbBatteryController extends LinearLayout {
         if (mBatteryStyle == STYLE_ICON_CIRCLE) {
             icon = plugged ? R.drawable.stat_sys_battery_charge_circle
                     : R.drawable.stat_sys_battery_circle;
+        } else if (mBatteryStyle == STYLE_ICON_SPEED) {
+            icon = plugged ? R.drawable.stat_sys_battery_charge_altcircle
+                    : R.drawable.stat_sys_battery_altcircle;
+        } else if (mBatteryStyle == STYLE_ICON_SQUARE) {
+            icon = plugged ? R.drawable.stat_sys_battery_charge_square
+                    : R.drawable.stat_sys_battery_square; 
         } else {
             icon = plugged ? R.drawable.stat_sys_battery_charge
                     : R.drawable.stat_sys_battery;
@@ -272,6 +278,18 @@ public class SbBatteryController extends LinearLayout {
                 mBatteryIcon.setVisibility(View.VISIBLE);
                 setVisibility(View.VISIBLE);
                 break;
+	    case STYLE_ICON_SPEED:
+                mBatteryText.setVisibility(View.GONE);
+                mBatteryCenterText.setVisibility(View.GONE);
+                mBatteryIcon.setVisibility(View.VISIBLE);
+                setVisibility(View.VISIBLE);
+                break;
+            case STYLE_ICON_SQUARE:
+                mBatteryText.setVisibility(View.GONE);
+                mBatteryCenterText.setVisibility(View.GONE);
+                mBatteryIcon.setVisibility(View.VISIBLE);
+                setVisibility(View.VISIBLE);
+                break;
 	    case BATTERY_STYLE_CIRCLE:
                 mBatteryText.setVisibility(View.GONE);
                 mBatteryCenterText.setVisibility(View.GONE);
@@ -294,18 +312,6 @@ public class SbBatteryController extends LinearLayout {
                 mBatteryText.setVisibility(View.GONE);
                 mBatteryCenterText.setVisibility(View.GONE);
                 mBatteryIcon.setVisibility(View.GONE);
-                setVisibility(View.VISIBLE);
-                break;
-	    case STYLE_ICON_SPEED:
-                mBatteryText.setVisibility(View.GONE);
-                mBatteryCenterText.setVisibility(View.GONE);
-                mBatteryIcon.setVisibility(View.GONE);
-                setVisibility(View.VISIBLE);
-                break;
-            case STYLE_ICON_SQUARE:
-                mBatteryText.setVisibility(View.GONE);
-                mBatteryCenterText.setVisibility(View.GONE);
-                mBatteryIcon.setVisibility(View.VISIBLE);
                 setVisibility(View.VISIBLE);
                 break;
             default:
