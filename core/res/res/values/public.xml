@@ -2046,4 +2046,10 @@
   <java-symbol type="drawable" name="ic_lockscreen_unlock_normal" />
   <java-symbol type="dimen" name="lockscreen_target_inset" />
   <java-symbol type="drawable" name="ic_lockscreen_empty" />
+
+  <!-- Expanded desktop -->
+  <java-symbol type="drawable" name="ic_lock_expanded_desktop" /> 
+  <java-symbol type="string" name="global_actions_toggle_expanded_desktop_mode" />
+  <java-symbol type="string" name="global_actions_expanded_desktop_mode_off_status" />
+  <java-symbol type="string" name="global_actions_expanded_desktop_mode_on_status" />
 </resources>
