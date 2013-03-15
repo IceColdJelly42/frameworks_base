@@ -423,6 +423,8 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         // Next NavBar Hide
         if(mEnableNavBarHideToggle) {
             mItems.add(mNavBarHideToggle);
+        }
+        
         // next: expanded desktop toggle
         // only shown if enabled, disabled by default
         if(Settings.System.getInt(mContext.getContentResolver(),
