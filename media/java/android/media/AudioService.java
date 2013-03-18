@@ -3648,6 +3648,8 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                 }
             }
         }
+        Log.d(TAG, "Adjust volume after A2DP");
+        adjustCurrentStreamVolume(); 
     }
 
     private boolean handleDeviceConnection(boolean connected, int device, String params) {
@@ -3770,6 +3772,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                 setBluetoothA2dpOnInt(true);
             }
             boolean isUsb = ((device & AudioSystem.DEVICE_OUT_ALL_USB) != 0);
+            Log.d(TAG, "isUsb "+ isUsb);
             handleDeviceConnection((state == 1), device, (isUsb ? name : ""));
             if (state != 0) {
                 if ((device == AudioSystem.DEVICE_OUT_WIRED_HEADSET) ||
@@ -3882,7 +3885,6 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                     }
                 }
             } else if (action.equals(Intent.ACTION_HEADSET_PLUG)) {
-                // maxwens
                 state = intent.getIntExtra("state", 0);
                 if (state == 1) {
                     // Headset plugged in
@@ -3895,6 +3897,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                     // Headset disconnected
                     Log.d(TAG, "Headset unplugged");
                 }
+                Log.d(TAG, "Adjust volume after headset");
                 adjustCurrentStreamVolume(); 
             } else if (action.equals(Intent.ACTION_USB_AUDIO_ACCESSORY_PLUG) ||
                            action.equals(Intent.ACTION_USB_AUDIO_DEVICE_PLUG)) {
@@ -3987,8 +3990,7 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                         null,
                         SAFE_VOLUME_CONFIGURE_TIMEOUT_MS);
                  
-                //maxwen: Restore volumes
-                Log.d(TAG, "Restore volume");
+                Log.d(TAG, "Adjust volume after boot");
                 adjustCurrentStreamVolume();
             } else if (action.equals(Intent.ACTION_PACKAGE_REMOVED)) {
                 if (!intent.getBooleanExtra(Intent.EXTRA_REPLACING, false)) {
@@ -6131,11 +6133,11 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
     
     // maxwen
     private void adjustCurrentStreamVolume() {
-    	int device;
-    	
-    	for (int stream = 0; stream < AudioSystem.getNumStreamTypes(); stream++) {
-        	if (stream == mStreamVolumeAlias[stream]) {
-            	VolumeStreamState streamState = mStreamStates[mStreamVolumeAlias[stream]];
+        int device;
+
+        for (int stream = 0; stream < AudioSystem.getNumStreamTypes(); stream++) {
+            if (stream == mStreamVolumeAlias[stream]) {
+                VolumeStreamState streamState = mStreamStates[mStreamVolumeAlias[stream]];
                 device = getDeviceForStream(stream);
                 // apply stored value for device
                 streamState.applyDeviceVolume(device);
