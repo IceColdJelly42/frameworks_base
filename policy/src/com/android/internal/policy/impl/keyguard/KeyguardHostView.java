@@ -152,8 +152,9 @@ public class KeyguardHostView extends KeyguardViewBase {
             mCameraDisabled = dpm.getCameraDisabled(null);
         }
 
-        mCameraDisabled = (Settings.System.getBoolean(mContext.getContentResolver(),
-            Settings.System.CAMERA_WIDGET_HIDE, false));
+		if (!mCameraDisabled)
+        	mCameraDisabled = (Settings.System.getBoolean(mContext.getContentResolver(),
+            	Settings.System.CAMERA_WIDGET_HIDE, false));
 
         mSafeModeEnabled = LockPatternUtils.isSafeModeEnabled();
         mUserSetupCompleted = Settings.Secure.getIntForUser(mContext.getContentResolver(),
