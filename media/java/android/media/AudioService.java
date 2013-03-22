@@ -3913,9 +3913,6 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                               "ACTION_USB_AUDIO_ACCESSORY_PLUG" : "ACTION_USB_AUDIO_DEVICE_PLUG")
                         + ", state = " + state + ", card: " + alsaCard + ", device: " + alsaDevice);
                 setWiredDeviceConnectionState(device, state, params);
-                
-                // maxwen
-                AudioSystem.setForceUse(AudioSystem.FOR_MEDIA, AudioSystem.FORCE_NONE);
             } else if (action.equals(BluetoothHeadset.ACTION_AUDIO_STATE_CHANGED)) {
                 boolean broadcast = false;
                 int scoAudioState = AudioManager.SCO_AUDIO_STATE_ERROR;
@@ -3962,6 +3959,8 @@ public class AudioService extends IAudioService.Stub implements OnFinished {
                     newIntent.putExtra(AudioManager.EXTRA_SCO_AUDIO_STATE, scoAudioState);
                     sendStickyBroadcastToAll(newIntent);
                 }
+                Log.d(TAG, "Adjust volume after BT");
+                adjustCurrentStreamVolume();
             } else if (action.equals(Intent.ACTION_BOOT_COMPLETED)) {
                 mBootCompleted = true;
                 sendMsg(mAudioHandler, MSG_LOAD_SOUND_EFFECTS, SENDMSG_NOOP,
