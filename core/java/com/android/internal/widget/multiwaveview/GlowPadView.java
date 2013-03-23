@@ -79,18 +79,6 @@ public class GlowPadView extends View {
     public final static String ICON_FILE = "icon_file";
 
     /**
-     * Number of customizable lockscreen targets for tablets
-     * @hide
-     */
-    public final static int MAX_TABLET_TARGETS = 7;
-
-    /**
-     * Number of customizable lockscreen targets for phones
-     * @hide
-     */
-    public final static int MAX_PHONE_TARGETS = 4;
-
-    /**
      *
      * @hide
      */
@@ -285,6 +273,8 @@ public class GlowPadView extends View {
         }
         if (mTargetDrawables == null || mTargetDrawables.size() == 0) {
             throw new IllegalStateException("Must specify at least one target drawable");
+        } else if (mTargetDrawables.size() > 1) {
+            mMagneticTargets = false;
         }
 
         // Read array of target descriptions
@@ -652,6 +642,9 @@ public class GlowPadView extends View {
     private void internalSetTargetResources(ArrayList<TargetDrawable> drawList) {
         mTargetResourceId = 0;
         mTargetDrawables = drawList;
+        if (mTargetDrawables.size() > 1) {
+            mMagneticTargets = false;
+        }
         updateTargetPositions(mWaveCenterX, mWaveCenterY);
         updatePointCloudPosition(mWaveCenterX, mWaveCenterY);
         hideTargets(false, false);
