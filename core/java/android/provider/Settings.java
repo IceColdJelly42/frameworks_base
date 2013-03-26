@@ -3537,6 +3537,12 @@ public final class Settings {
          public static final String SWAP_VOLUME_KEYS_BY_ROTATE = "swap_volume_keys_by_rotate";
 
         /**
+         * Lock Volume Keys, Whether to lock ringer volume changes in silent mode.
+         * @hide
+         */
+        public static final String LOCK_VOLUME_KEYS = "lock_volume_keys";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
