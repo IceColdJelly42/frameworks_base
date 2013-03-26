@@ -3530,6 +3530,12 @@ public final class Settings {
          */
         public static final String CAMERA_WIDGET_HIDE = "camera_widget_hide";
 
+         /**
+          * Swap volume buttons when the screen is rotated by 90 or 180 degrees
+          * @hide
+          */
+         public static final String SWAP_VOLUME_KEYS_BY_ROTATE = "swap_volume_keys_by_rotate";
+
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
