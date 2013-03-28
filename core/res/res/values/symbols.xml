@@ -1916,4 +1916,7 @@
   <java-symbol type="string" name="action_null"/>
   <java-symbol type="string" name="action_app"/>
 
+  <!-- ICJ default wallpaper -->
+  <java-symbol type="drawable" name="icj_default_wallpaper" />
+
 </resources>
