@@ -2819,13 +2819,12 @@ public final class Settings {
          */
         public static final String NAVIGATION_BAR_SHOW_NOW = "navigation_bar_show_now";
 
-
          /**
           * Used as a flag to determine if we are showing the StatusBar information (clock and system info) on the lockscreen. Notifications will still be visible
           */
          public static final String NAVIGATION_BAR_STATUS_HIDE_LOCKSCREEN_INFO = "navigation_bar_status_hide_lockscreen_info";
 
-    	 /**
+    	  /**
          * Show the NavBar dialog in Power menu
          * @hide
          */
@@ -3322,6 +3321,12 @@ public final class Settings {
          * @hide
          */
         public static final String QUICK_TOGGLE_FAV_CONTACT = "quick_toggle_fav_contact";
+
+        /**
+         * Screenshot toggle delay
+         * @hide
+         */
+        public static final String SCREENSHOT_TOGGLE_DELAY = "screenshot_toggle_delay";
 
         /**
          * enable and disable fast toggle in settings
