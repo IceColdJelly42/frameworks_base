@@ -77,7 +77,7 @@ import java.util.Observer;
 final class DisplayPowerController {
     private static final String TAG = "DisplayPowerController";
 
-    private static boolean DEBUG = true;
+    private static boolean DEBUG = false;
     private static final boolean DEBUG_PRETEND_PROXIMITY_SENSOR_ABSENT = false;
     private static final boolean DEBUG_PRETEND_LIGHT_SENSOR_ABSENT = false;
 
