@@ -560,6 +560,12 @@ class ContextImpl extends Context {
                     IFmTransmitter service = IFmTransmitter.Stub.asInterface(b);
                     return new FmTransmitterImpl(service);
                 }});
+
+        registerService(PROFILE_SERVICE, new ServiceFetcher() {
+                public Object createService(ContextImpl ctx) {
+                    final Context outerContext = ctx.getOuterContext();
+                    return new ProfileManager (outerContext, ctx.mMainThread.getHandler());
+                }});
     }
 
     static ContextImpl getImpl(Context context) {
