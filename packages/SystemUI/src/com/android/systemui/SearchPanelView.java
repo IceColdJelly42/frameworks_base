@@ -149,6 +149,19 @@ public class SearchPanelView extends FrameLayout implements
         mObserver = new SettingsObserver(new Handler());
     }
 
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        mSettingsObserver.observe();
+        updateSettings();
+    }
+
+    @Override
+    protected void onDetachedFromWindow() {
+        mContentResolver.unregisterContentObserver(mSettingsObserver);
+        super.onDetachedFromWindow();
+    }
+
     private void startAssistActivity() {
         if (!mBar.isDeviceProvisioned()) return;
 
