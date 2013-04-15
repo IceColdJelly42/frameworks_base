@@ -1268,8 +1268,8 @@ public class PhoneStatusBar extends BaseStatusBar {
     }
 
     private void updateStatusBarVisibility() {
-        if (Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.AUTO_HIDE_STATUSBAR, 0) == 1) {
+        if (Settings.System.getBoolean(mContext.getContentResolver(),
+                Settings.System.AUTO_HIDE_STATUSBAR, false)) {
             Settings.System.putInt(mContext.getContentResolver(),
                     Settings.System.HIDE_STATUSBAR,
                     (mNotificationData.size() == 0) ? 1 : 0);
