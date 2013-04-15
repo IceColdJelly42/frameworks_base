@@ -3138,6 +3138,11 @@ public final class Settings {
          */
         public static final String PIE_CENTER = "pie_center";
 
+        /**
+         * @hide
+         */
+        public static final String PIE_EXPANDED_DESKTOP_ONLY = "pie_expanded_desktop_only";
+
          /**
          * Expanded desktop on/off state
          * @hide
