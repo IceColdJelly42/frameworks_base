@@ -2431,7 +2431,7 @@ public class Activity extends ContextThemeWrapper
                                                                                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);     
                                                      }
                                                      
-                                                     }, 5000);
+                                                     }, 10000);
                         }
                         
                         mightBeMyGesture = false;
