@@ -2414,7 +2414,10 @@ public class Activity extends ContextThemeWrapper
                     tStatus = ev.getY();
                     if (tStatus < getStatusBarHeight())
                     {
-                        mightBeMyGesture = true;
+                        // only if this window is really set to be fullscreen
+                        if ((getWindow().getAttributes().flags & WindowManager.LayoutParams.FLAG_FULLSCREEN)==WindowManager.LayoutParams.FLAG_FULLSCREEN){
+                            mightBeMyGesture = true;
+                        }
                         return true;
                     }
                     break;
@@ -2431,7 +2434,7 @@ public class Activity extends ContextThemeWrapper
                                                                                getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);     
                                                      }
                                                      
-                                                     }, 10000);
+                                                     }, 5000);
                         }
                         
                         mightBeMyGesture = false;
