@@ -824,6 +824,7 @@ public class PhoneStatusBar extends BaseStatusBar {
         mIsAutoBrightNess = checkAutoBrightNess();
         updatePropFactorValue();
 
+        return mStatusBarView;
     }
 
     @Override
