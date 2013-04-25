@@ -86,7 +86,7 @@ public class RibbonTarget {
      */
 
     public RibbonTarget(Context context, final String sClick, final String lClick,
-            final String cIcon, final boolean text, final int color, final int size, final boolean touchVib, final boolean colorize) {
+            final String cIcon, final boolean text, final int color, final int size, final boolean touchVib) {
         mContext = context;
         u = new Intent();
         u.setAction("com.android.lockscreen.ACTION_UNLOCK_RECEIVER");
@@ -151,9 +151,6 @@ public class RibbonTarget {
                 }
             }
         }
-        if ((sClick.equals("**null**") ? lClick.startsWith("**") : sClick.startsWith("**")) && colorize) {
-            mIcon.setColorFilter(color);
-        }
         mIcon.setImageDrawable(newIcon);
         if (!sClick.equals("**null**")) {
             mIcon.setOnClickListener(new OnClickListener() {
@@ -193,7 +190,7 @@ public class RibbonTarget {
     }
 
     private void sendIt(String action) {
-        if (shouldUnlock(action)) {
+        if (!action.equals(AwesomeConstants.AwesomeConstant.ACTION_TORCH.value())) {
             mContext.sendBroadcastAsUser(u, UserHandle.ALL);
         }
         Intent i = new Intent();
@@ -201,16 +198,6 @@ public class RibbonTarget {
         i.putExtra("action", action);
         mContext.sendBroadcastAsUser(i, UserHandle.ALL);
         mContext.sendBroadcastAsUser(b, UserHandle.ALL);
-    }
-
-    private boolean shouldUnlock(String action) {
-        if (action.equals(AwesomeConstants.AwesomeConstant.ACTION_TORCH.value()) ||
-            action.equals(AwesomeConstants.AwesomeConstant.ACTION_NOTIFICATIONS.value()) ||
-            action.equals(AwesomeConstants.AwesomeConstant.ACTION_POWER.value())) {
-            return false;
-        }
-
-        return true;
     }
 
     public int mapChosenDpToPixels(int dp) {
