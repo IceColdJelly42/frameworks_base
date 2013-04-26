@@ -128,7 +128,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
     private MyAdapter mAdapter;
 
-    private boolean mKeyguardShowing = false;
+    private static boolean mKeyguardShowing = false;
     private boolean mDeviceProvisioned = false;
     private ToggleAction.State mAirplaneState = ToggleAction.State.Off;
     private boolean mIsWaitingForEcmExit = false;
@@ -1190,7 +1190,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
 
         public Context mContext;
         public boolean mNavbarVisible;
-        public boolean mNavbarStatusInvisible;
+        public boolean mStatusBarVisible;
         private final Handler mHandler;
         private int mInjectKeycode;
         long mDownTime;
@@ -1205,14 +1205,22 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             mContext = context;
             mNavbarVisible = Settings.System.getBoolean(mContext.getContentResolver(),
                     Settings.System.NAVIGATION_BAR_SHOW_NOW, false);
-            mNavbarStatusInvisible = Settings.System.getBoolean(mContext.getContentResolver(),
-                    Settings.System.STATUSBAR_HIDDEN, false);        
+
+            mStatusBarVisible = Settings.System.getBoolean(mContext.getContentResolver(), Settings.System.STATUSBAR_HIDDEN, false) && Settings.System.getBoolean(mContext.getContentResolver(), Settings.System.STATUSBAR_HIDDEN_NOW, false);      
 
             View v = inflater.inflate(R.layout.global_actions_navbar_mode, parent, false);
 
             for (int i = 0; i < 5; i++) {
                 View itemView = v.findViewById(ITEM_IDS[i]);
-                itemView.setSelected((i==0)&&(!mNavbarStatusInvisible)||(i==1)&&(mNavbarVisible));
+                
+                if (mKeyguardShowing ){
+                    if (ITEM_IDS[i] != R.id.navbarstatus){
+                        itemView.setVisibility(View.INVISIBLE);
+                        continue;
+                    }
+                }
+                
+                itemView.setSelected((i==0)&&(!mStatusBarVisible)||(i==1)&&(mNavbarVisible));
                 // Set up click handler
                 itemView.setTag(i);
                 itemView.setOnClickListener(this);
@@ -1228,7 +1236,7 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         }
 
         public boolean showDuringKeyguard() {
-            return false;
+            return true;
         }
 
         public boolean showBeforeProvisioning() {
@@ -1242,6 +1250,13 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         void willCreate() {
         }
 
+        private void updaHiddenStatusbar(boolean value) {
+            Settings.System.putBoolean(mContext.getContentResolver(),
+                    Settings.System.STATUSBAR_HIDDEN, value);
+            Settings.System.putBoolean(mContext.getContentResolver(),
+                    Settings.System.STATUSBAR_HIDDEN_NOW, value);
+        }
+        
         public void onClick(View v) {
             if (!(v.getTag() instanceof Integer)) return;
 
@@ -1250,11 +1265,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
             switch (index) {
 
             case 0 :
-                mNavbarStatusInvisible = !mNavbarStatusInvisible;
-                Settings.System.putBoolean(mContext.getContentResolver(),
-                        Settings.System.STATUSBAR_HIDDEN,
-                         mNavbarStatusInvisible );
-                v.setSelected(mNavbarStatusInvisible);
+                mStatusBarVisible = !mStatusBarVisible;
+                updaHiddenStatusbar(mStatusBarVisible);
+                v.setSelected(mStatusBarVisible);
                 mHandler.sendEmptyMessage(MESSAGE_DISMISS);
                 break;
             case 1 :

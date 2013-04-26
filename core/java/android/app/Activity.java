@@ -79,6 +79,7 @@ import android.view.WindowManagerGlobal;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.AdapterView;
 import android.widget.Toast;
+import android.provider.Settings;
 
 import java.io.FileDescriptor;
 import java.io.PrintWriter;
@@ -2415,8 +2416,12 @@ public class Activity extends ContextThemeWrapper
                     if (tStatus < getStatusBarHeight())
                     {
                         // only if this window is really set to be fullscreen
-                        if ((getWindow().getAttributes().flags & WindowManager.LayoutParams.FLAG_FULLSCREEN)==WindowManager.LayoutParams.FLAG_FULLSCREEN){
-                            mightBeMyGesture = true;
+                        if ((getWindow().getAttributes().flags & 
+                            WindowManager.LayoutParams.FLAG_FULLSCREEN)==WindowManager.LayoutParams.FLAG_FULLSCREEN){
+                            if (Settings.System.getBoolean(getContentResolver(),
+                                    Settings.System.STATUSBAR_SWIPE_FOR_FULLSCREEN, false)){
+                                mightBeMyGesture = true;
+                            }
                         }
                         return true;
                     }
@@ -2429,12 +2434,11 @@ public class Activity extends ContextThemeWrapper
                             getWindow().addFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
                             getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                             mHandler.postDelayed(new Runnable() {
-                                                     public void run() {
-                                                                               getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
-                                                                               getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);     
-                                                     }
-                                                     
-                                                     }, 5000);
+                                public void run() {
+                                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
+                                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);     
+                                }               
+                            }, 5000);
                         }
                         
                         mightBeMyGesture = false;

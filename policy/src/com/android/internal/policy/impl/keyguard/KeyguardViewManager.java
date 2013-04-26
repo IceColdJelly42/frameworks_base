@@ -93,7 +93,9 @@ public class KeyguardViewManager {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.LOCKSCREEN_SEE_THROUGH), false, this);
+                    Settings.System.LOCKSCREEN_SEE_THROUGH), false, this);         
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_HIDDEN_NOW), false, this);
         }
 
         @Override
@@ -156,11 +158,18 @@ public class KeyguardViewManager {
         boolean allowSeeThrough = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.LOCKSCREEN_SEE_THROUGH, 0) != 0;
 
+        boolean settingStatusbarHidden = Settings.System.getBoolean(mContext.getContentResolver(), Settings.System.STATUSBAR_HIDDEN, false) && Settings.System.getBoolean(mContext.getContentResolver(), Settings.System.STATUSBAR_HIDDEN_NOW, false);
+
         int flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                 | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR
-                | WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN
                 | WindowManager.LayoutParams.FLAG_HARDWARE_ACCELERATED;
 
+        if (!settingStatusbarHidden) {
+            flags |= WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN;
+        } else {
+            flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
+        }
+        
         if (!allowSeeThrough) {
             flags |= WindowManager.LayoutParams.FLAG_SHOW_WALLPAPER;
         }

@@ -2968,12 +2968,8 @@ public final class Settings {
          */
         public static final String NAVIGATION_BAR_SHOW_NOW = "navigation_bar_show_now";
 
-         /**
-          * Used as a flag to determine if we are showing the StatusBar information (clock and system info) on the lockscreen. Notifications will still be visible
-          */
-         public static final String NAVIGATION_BAR_STATUS_HIDE_LOCKSCREEN_INFO = "navigation_bar_status_hide_lockscreen_info";
 
-    	  /**
+        /**
          * Show the NavBar dialog in Power menu
          * @hide
          */
@@ -3991,6 +3987,24 @@ public final class Settings {
          * @hide
          */
         public static final String STATUSBAR_HIDDEN = "statusbar_hidden";
+
+        /**
+         * Used as a flag to determine if we have statusbar hidden now
+         * @hide
+         */
+        public static final String STATUSBAR_HIDDEN_NOW = "statusbar_hidden_now";
+
+        /**
+         * Used as a flag to determine if we have audo-expand statusbar enabled
+         * @hide
+         */
+        public static final String STATUSBAR_AUTO_EXPAND_HIDDEN = "statusbar_auto_expand_hidden";
+
+        /**
+         * Used as a flag to determine if we have audo-expand statusbar enabled
+         * @hide
+         */
+        public static final String STATUSBAR_SWIPE_FOR_FULLSCREEN = "statusbar_swipe_for_fullscreen";
 
         /**
          * Statusbar toggle for quick settings

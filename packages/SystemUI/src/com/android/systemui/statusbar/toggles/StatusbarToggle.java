@@ -33,18 +33,25 @@ public class StatusbarToggle extends StatefulToggle {
     protected void doEnable() {
         Settings.System.putBoolean(mContext.getContentResolver(),
                 Settings.System.STATUSBAR_HIDDEN, true);
+        Settings.System.putBoolean(mContext.getContentResolver(),
+                Settings.System.STATUSBAR_HIDDEN_NOW, true);
     }
 
     @Override
     protected void doDisable() {
         Settings.System.putBoolean(mContext.getContentResolver(),
                 Settings.System.STATUSBAR_HIDDEN, false);
+        Settings.System.putBoolean(mContext.getContentResolver(),
+                Settings.System.STATUSBAR_HIDDEN_NOW, false);
     }
 
     @Override
     protected void updateView() {
         final boolean enabled = Settings.System.getBoolean(mContext.getContentResolver(),
-                Settings.System.STATUSBAR_HIDDEN, false);
+                Settings.System.STATUSBAR_HIDDEN, false) && 
+            Settings.System.getBoolean(mContext.getContentResolver(),
+                Settings.System.STATUSBAR_HIDDEN_NOW, false);
+                
         setEnabledState(enabled);
         setIcon(enabled ? R.drawable.ic_qs_statusbar_off : R.drawable.ic_qs_statusbar_on);
         setLabel(enabled ? R.string.quick_settings_statusbar_off_label
@@ -60,7 +67,7 @@ public class StatusbarToggle extends StatefulToggle {
         void observe() {
             ContentResolver resolver = mContext.getContentResolver();
             resolver.registerContentObserver(Settings.Global
-                    .getUriFor(Settings.System.STATUSBAR_HIDDEN), false,
+                    .getUriFor(Settings.System.STATUSBAR_HIDDEN_NOW), false,
                     this);
         }
 
