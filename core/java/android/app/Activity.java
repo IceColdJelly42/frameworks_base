@@ -49,7 +49,6 @@ import android.os.Parcelable;
 import android.os.RemoteException;
 import android.os.StrictMode;
 import android.os.UserHandle;
-import android.provider.Settings;
 import android.text.Selection;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -2409,8 +2408,6 @@ public class Activity extends ContextThemeWrapper
      * @return boolean Return true if this event was consumed.
      */
     public boolean dispatchTouchEvent(MotionEvent ev) {
-            boolean mHiddenStatusbarPulldown = (Settings.System.getInt(getContentResolver(),
-                Settings.System.HIDDEN_STATUSBAR_PULLDOWN, 0) == 1);
             switch (ev.getAction())
             {
                 case MotionEvent.ACTION_DOWN:
@@ -2425,7 +2422,7 @@ public class Activity extends ContextThemeWrapper
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if (mightBeMyGesture && mHiddenStatusbarPulldown)
+                    if (mightBeMyGesture)
                     {
                         if(ev.getY() > tStatus)
                         {

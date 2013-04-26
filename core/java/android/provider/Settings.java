@@ -4008,12 +4008,6 @@ public final class Settings {
         public static final String TOGGLE_NOTIFICATION_SHADE = "toggle_notification_shade";
 
         /**
-         * Whether or not hidden Statusbar can be pulled down
-         * @hide
-         */
-        public static final String HIDDEN_STATUSBAR_PULLDOWN = "hidden_statusbar_pulldown";
-
-        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
