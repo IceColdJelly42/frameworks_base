@@ -337,6 +337,8 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     DisplayMetrics mDisplayMetrics = new DisplayMetrics();
 
+    private int mLastCount = -1;
+    
     // XXX: gesture research
     private final GestureRecorder mGestureRec = DEBUG_GESTURES
         ? new GestureRecorder("/sdcard/statusbar_gestures.dat") 
@@ -1313,25 +1315,19 @@ public class PhoneStatusBar extends BaseStatusBar {
     }
 
     private void updateStatusBarVisibility() {
-        Log.d(TAG, "updateStatusBarVisibility");
-        
-        if (!Settings.System.getBoolean(mContext.getContentResolver(),
-                Settings.System.STATUSBAR_HIDDEN, false)){
-            return;
-        }
         if (Settings.System.getBoolean(mContext.getContentResolver(),
-                Settings.System.STATUSBAR_AUTO_EXPAND_HIDDEN, false)) {
-            Log.d(TAG, "auto-expand statusbar");
-            Settings.System.putBoolean(mContext.getContentResolver(),
-                    Settings.System.STATUSBAR_HIDDEN_NOW,
-                    (mNotificationData.size() == 0) ? true : false);
-        } else {
-            Log.d(TAG, "hide statusbar");
-            Settings.System.putBoolean(mContext.getContentResolver(),
-                    Settings.System.STATUSBAR_HIDDEN_NOW, true);
-        }
-    } 
+                    Settings.System.STATUSBAR_AUTO_EXPAND_HIDDEN, false)) {
 
+            boolean hiddenStatusbar = (mNotificationData.size() == 0) ? true : false;
+            
+            if (Settings.System.getBoolean(mContext.getContentResolver(),
+                    Settings.System.STATUSBAR_HIDDEN_NOW, false) != hiddenStatusbar){     
+                Settings.System.putBoolean(mContext.getContentResolver(),
+                    Settings.System.STATUSBAR_HIDDEN_NOW, hiddenStatusbar);
+            }
+        }
+    }
+    
     private void loadNotificationShade() {
         if (mPile == null) return;
 
@@ -1505,6 +1501,27 @@ public class PhoneStatusBar extends BaseStatusBar {
     @Override
     protected void setAreThereNotifications() {
         final boolean any = mNotificationData.size() > 0;
+        
+        // to inhibit "jumping" auto-expand statusbar
+        // make sure we trigger it only if needed
+        boolean from0to1 = false;
+        boolean from1to0 = false;
+        
+        if (mLastCount==-1){
+            mLastCount = mNotificationData.size();
+            if (mLastCount > 0){
+                from0to1 = true;
+            }
+        } else {
+            int curr = mNotificationData.size();
+            if (curr == 1 && mLastCount == 0){
+                from0to1 = true;
+            }
+            if (curr == 0 && mLastCount == 1){
+                from1to0 = true;
+            }
+            mLastCount = curr;
+        }
 
         final boolean clearable = any && mNotificationData.hasClearableItems();
 
@@ -1566,7 +1583,7 @@ public class PhoneStatusBar extends BaseStatusBar {
                 .start();
         }
 
-        if (mNotificationData.size() < 2){
+        if (from0to1 || from1to0){
             updateStatusBarVisibility(); 
         }
         
@@ -3161,8 +3178,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                     Settings.System.NOTIFICATION_SHORTCUTS_TOGGLE), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NOTIFICATION_SHORTCUTS_HIDE_CARRIER), false, this, UserHandle.USER_ALL);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.STATUSBAR_HIDDEN_NOW), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_AUTO_EXPAND_HIDDEN), false, this);
         }

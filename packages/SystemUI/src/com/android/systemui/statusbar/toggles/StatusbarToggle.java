@@ -32,15 +32,11 @@ public class StatusbarToggle extends StatefulToggle {
     @Override
     protected void doEnable() {
         Settings.System.putBoolean(mContext.getContentResolver(),
-                Settings.System.STATUSBAR_HIDDEN, true);
-        Settings.System.putBoolean(mContext.getContentResolver(),
                 Settings.System.STATUSBAR_HIDDEN_NOW, true);
     }
 
     @Override
     protected void doDisable() {
-        Settings.System.putBoolean(mContext.getContentResolver(),
-                Settings.System.STATUSBAR_HIDDEN, false);
         Settings.System.putBoolean(mContext.getContentResolver(),
                 Settings.System.STATUSBAR_HIDDEN_NOW, false);
     }
@@ -48,8 +44,6 @@ public class StatusbarToggle extends StatefulToggle {
     @Override
     protected void updateView() {
         final boolean enabled = Settings.System.getBoolean(mContext.getContentResolver(),
-                Settings.System.STATUSBAR_HIDDEN, false) && 
-            Settings.System.getBoolean(mContext.getContentResolver(),
                 Settings.System.STATUSBAR_HIDDEN_NOW, false);
                 
         setEnabledState(enabled);

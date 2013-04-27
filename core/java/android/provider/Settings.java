@@ -2968,7 +2968,6 @@ public final class Settings {
          */
         public static final String NAVIGATION_BAR_SHOW_NOW = "navigation_bar_show_now";
 
-
         /**
          * Show the NavBar dialog in Power menu
          * @hide
@@ -3981,12 +3980,6 @@ public final class Settings {
         * @hide
         */
         public static final String MEDIA_SCANNER_ON_BOOT = "media_scanner_on_boot";
-
-        /**
-         * Used as a flag to determine if we have statusbar hidden
-         * @hide
-         */
-        public static final String STATUSBAR_HIDDEN = "statusbar_hidden";
 
         /**
          * Used as a flag to determine if we have statusbar hidden now

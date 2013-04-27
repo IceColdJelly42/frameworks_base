@@ -158,7 +158,8 @@ public class KeyguardViewManager {
         boolean allowSeeThrough = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.LOCKSCREEN_SEE_THROUGH, 0) != 0;
 
-        boolean settingStatusbarHidden = Settings.System.getBoolean(mContext.getContentResolver(), Settings.System.STATUSBAR_HIDDEN, false) && Settings.System.getBoolean(mContext.getContentResolver(), Settings.System.STATUSBAR_HIDDEN_NOW, false);
+        boolean settingStatusbarHidden = Settings.System.getBoolean(mContext.getContentResolver(), 
+                Settings.System.STATUSBAR_HIDDEN_NOW, false);
 
         int flags = WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN
                 | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR

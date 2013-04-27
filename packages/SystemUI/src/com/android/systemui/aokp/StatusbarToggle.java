@@ -36,12 +36,12 @@ public class StatusbarToggle extends Activity  {
   }
 
   @Override
-  public void onResume() {
+  public void onResume()  {
     super.onResume();
     boolean StatusbarState = Settings.System.getBoolean(getContentResolver(),
-      Settings.System.STATUSBAR_HIDDEN, false);
+      Settings.System.STATUSBAR_HIDDEN_NOW, false);
     Settings.System.putBoolean(getContentResolver(),
-      Settings.System.STATUSBAR_HIDDEN, !StatusbarState);
+      Settings.System.STATUSBAR_HIDDEN_NOW, !StatusbarState);
     this.finish();
   }
 }
