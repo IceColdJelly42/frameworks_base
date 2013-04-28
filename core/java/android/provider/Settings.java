@@ -3991,21 +3991,13 @@ public final class Settings {
         public static final String LOCKSCREEN_VIBRATE_ENABLED = "lockscreen.vibrate_enabled";
 
         /**
-         * MediaScanner behavior on boot.
-         * 0 = enabled
-         * 1 = ask (notification)
-         * 2 = disabled
-         * @hide
-         */
+        * MediaScanner behavior on boot.
+        * 0 = enabled
+        * 1 = ask (notification)
+        * 2 = disabled
+        * @hide
+        */
         public static final String MEDIA_SCANNER_ON_BOOT = "media_scanner_on_boot";
-
-        /**
-         * Whether Status Bar is currently hidden or not for notification
-         * toggle notification shade
-         *
-         * @hide
-         */
-        public static final String TOGGLE_NOTIFICATION_SHADE = "toggle_notification_shade";
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings
