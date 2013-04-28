@@ -175,8 +175,8 @@ import java.util.List;
  */
 public class PhoneWindowManager implements WindowManagerPolicy {
     static final String TAG = "WindowManager";
-    static final boolean DEBUG = true;
-    static final boolean localLOGV = true;
+    static final boolean DEBUG = false;
+    static final boolean localLOGV = false;
     static final boolean DEBUG_LAYOUT = false;
     static final boolean DEBUG_INPUT = false;
     static final boolean DEBUG_STARTING_WINDOW = false;
@@ -416,8 +416,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             }
         }
     }
-
-    boolean mHideStatusBar;
 
     private static final class PointerLocationInputEventReceiver extends InputEventReceiver {
         private final PointerLocationView mView;
@@ -725,12 +723,11 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.HARDWARE_KEY_REBINDING), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_HIDDEN_NOW), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.EXPANDED_DESKTOP_STATE), false, this,
                     UserHandle.USER_ALL); 
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.HIDE_STATUSBAR), false, this); 
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.TOGGLE_NOTIFICATION_SHADE), false, this);
+
             updateSettings();
         }
 
@@ -3860,15 +3857,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 // and mTopIsFullscreen is that that mTopIsFullscreen is set only if the window
                 // has the FLAG_FULLSCREEN set.  Not sure if there is another way that to be the
                 // case though.
-                boolean toggleNotificationShade = Settings.System.getInt(mContext.getContentResolver(),
-                        Settings.System.TOGGLE_NOTIFICATION_SHADE, 0) == 1;
-                if ((topIsFullscreen && !toggleNotificationShade)
-                                        || (((Settings.System.getInt(mContext.getContentResolver(),
+                    boolean settingStatusbarHidden = Settings.System.getBoolean(mContext.getContentResolver(), 
+                        Settings.System.STATUSBAR_HIDDEN_NOW, false);
+                if ((topIsFullscreen || settingStatusbarHidden) ||
+                                       (Settings.System.getInt(mContext.getContentResolver(),
                                         Settings.System.EXPANDED_DESKTOP_STATE, 0) == 1 &&
                                         Settings.System.getInt(mContext.getContentResolver(),
-                                        Settings.System.EXPANDED_DESKTOP_STYLE, 0) == 2 && !toggleNotificationShade)) ||
-                                        (Settings.System.getInt(mContext.getContentResolver(),
-                                        Settings.System.HIDE_STATUSBAR, 0) == 1) && !toggleNotificationShade)) {
+                                        Settings.System.EXPANDED_DESKTOP_STYLE, 0) == 2)) {
+                    if (DEBUG_LAYOUT) Log.v(TAG, "** HIDING status bar");
                     if (mStatusBar.hideLw(true)) {
                         changes |= FINISH_LAYOUT_REDO_LAYOUT;
 

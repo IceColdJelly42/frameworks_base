@@ -92,6 +92,7 @@ public class ToggleManager {
     public static final String NAVBAR_HIDE_TOGGLE = "NAVBARHIDE";
     public static final String QUICKRECORD_TOGGLE = "QUICKRECORD";
     public static final String QUIETHOURS_TOGGLE = "QUIETHOURS";
+    public static final String STATUSBAR_TOGGLE = "STATUSBAR";
     public static final String SLEEP_TOGGLE = "SLEEP";
     public static final String SCREENSHOT_TOGGLE = "SCREENSHOT";
     public static final String REBOOT_TOGGLE = "REBOOT";
@@ -159,6 +160,7 @@ public class ToggleManager {
             toggleMap.put(NAVBAR_HIDE_TOGGLE, NavbarHideToggle.class);
             toggleMap.put(QUICKRECORD_TOGGLE, QuickRecordToggle.class);
             toggleMap.put(QUIETHOURS_TOGGLE, QuietHoursToggle.class);
+            toggleMap.put(STATUSBAR_TOGGLE, StatusbarToggle.class);
             toggleMap.put(SLEEP_TOGGLE, SleepToggle.class);
             toggleMap.put(SCREENSHOT_TOGGLE, ScreenshotToggle.class);
             toggleMap.put(REBOOT_TOGGLE, RebootToggle.class);

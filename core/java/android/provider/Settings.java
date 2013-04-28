@@ -2968,12 +2968,7 @@ public final class Settings {
          */
         public static final String NAVIGATION_BAR_SHOW_NOW = "navigation_bar_show_now";
 
-         /**
-          * Used as a flag to determine if we are showing the StatusBar information (clock and system info) on the lockscreen. Notifications will still be visible
-          */
-         public static final String NAVIGATION_BAR_STATUS_HIDE_LOCKSCREEN_INFO = "navigation_bar_status_hide_lockscreen_info";
-
-    	  /**
+        /**
          * Show the NavBar dialog in Power menu
          * @hide
          */
@@ -2990,23 +2985,10 @@ public final class Settings {
         public static final String POWER_DIALOG_SHOW_AIRPLANE_TOGGLE = "power_dialog_show_airplane_toggle";
 
         /**
-         * Whether Status bar should be hiidden when there are no
-         * notifications
-         * @hide
-         */
-        public static final String AUTO_HIDE_STATUSBAR = "auto_hide_statusbar";
-
-        /**
          * Select Classic Recents menu style [GB-]
          * @hide
          */
         public static final String CLASSIC_RECENTS_MENU = "classic_recents_menu";
-
-         /**
-         * Whether Status Bar is currently hidden or not
-         * @hide
-         */
-        public static final String HIDE_STATUSBAR = "hide_statusbar";
 
          /**
          * @hide
@@ -3991,21 +3973,37 @@ public final class Settings {
         public static final String LOCKSCREEN_VIBRATE_ENABLED = "lockscreen.vibrate_enabled";
 
         /**
-         * MediaScanner behavior on boot.
-         * 0 = enabled
-         * 1 = ask (notification)
-         * 2 = disabled
-         * @hide
-         */
+        * MediaScanner behavior on boot.
+        * 0 = enabled
+        * 1 = ask (notification)
+        * 2 = disabled
+        * @hide
+        */
         public static final String MEDIA_SCANNER_ON_BOOT = "media_scanner_on_boot";
 
         /**
-         * Whether Status Bar is currently hidden or not for notification
-         * toggle notification shade
-         *
+         * Used as a flag to determine if we have statusbar hidden now
          * @hide
          */
-        public static final String TOGGLE_NOTIFICATION_SHADE = "toggle_notification_shade";
+        public static final String STATUSBAR_HIDDEN_NOW = "statusbar_hidden_now";
+
+        /**
+         * Used as a flag to determine if we have audo-expand statusbar enabled
+         * @hide
+         */
+        public static final String STATUSBAR_AUTO_EXPAND_HIDDEN = "statusbar_auto_expand_hidden";
+
+        /**
+         * Used as a flag to determine if we have audo-expand statusbar enabled
+         * @hide
+         */
+        public static final String STATUSBAR_SWIPE_FOR_FULLSCREEN = "statusbar_swipe_for_fullscreen";
+
+        /**
+         * Statusbar toggle for quick settings
+         * &hide
+         */
+        public static final String STATUSBAR_QUICK_TOGGLE = "statusbar_quick_toggle";
 
         /**
          * Whether or not hidden Statusbar can be pulled down
