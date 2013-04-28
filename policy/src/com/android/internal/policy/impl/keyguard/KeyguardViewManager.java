@@ -47,6 +47,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewManager;
 import android.view.WindowManager;
+import android.view.MotionEvent;
 import android.widget.FrameLayout;
 
 import com.android.internal.R;
@@ -206,6 +207,10 @@ public class KeyguardViewManager {
     }
 
     class ViewManagerHost extends FrameLayout {
+
+        private boolean mightBeMyGesture = false;
+        private float tStatus;
+
         public ViewManagerHost(Context context) {
             super(context);
             setFitsSystemWindows(true);
@@ -252,6 +257,65 @@ public class KeyguardViewManager {
                 }
             }
             return super.dispatchKeyEvent(event);
+        }
+
+        @Override
+        public boolean dispatchTouchEvent(MotionEvent event) {
+            if (mKeyguardView != null) {
+                switch (event.getAction())
+                {
+                    case MotionEvent.ACTION_DOWN:
+                        tStatus = event.getY();
+                        if (tStatus < getStatusBarHeight())
+                        {                        
+                            boolean swipeEnabled = Settings.System.getBoolean(mContext.getContentResolver(),
+                                    Settings.System.STATUSBAR_SWIPE_FOR_FULLSCREEN, false);
+
+                            boolean settingStatusbarHidden = Settings.System.getBoolean(mContext.getContentResolver(), 
+                                    Settings.System.STATUSBAR_HIDDEN_NOW, false);
+                            
+                            if (swipeEnabled && settingStatusbarHidden){
+                                mightBeMyGesture = true;
+                            }
+                        
+                            return true;
+                        }
+                        break;
+                    case MotionEvent.ACTION_MOVE:
+                        if (mightBeMyGesture)
+                        {
+                            if(event.getY() > tStatus)
+                            {
+                                Settings.System.putBoolean(mContext.getContentResolver(), 
+                                    Settings.System.STATUSBAR_HIDDEN_NOW, false);
+                                
+                                mKeyguardHost.postDelayed(new Runnable() {
+                                    public void run() {
+                                        Settings.System.putBoolean(mContext.getContentResolver(), 
+                                            Settings.System.STATUSBAR_HIDDEN_NOW, true);
+                                    }               
+                                }, 5000);
+                            }
+                            
+                            mightBeMyGesture = false;
+                                
+                            return true;
+                        }
+                        break;
+                    default:
+                        mightBeMyGesture = false;
+                        break;
+                }
+              
+                if (mKeyguardView.dispatchTouchEvent(event)) {
+                    return true;
+                }
+            }
+            return super.dispatchTouchEvent(event);
+        }
+                
+        private int getStatusBarHeight() {
+            return mContext.getResources().getDimensionPixelSize(com.android.internal.R.dimen.status_bar_height);
         }
     }
 
