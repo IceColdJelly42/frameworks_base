@@ -2990,23 +2990,10 @@ public final class Settings {
         public static final String POWER_DIALOG_SHOW_AIRPLANE_TOGGLE = "power_dialog_show_airplane_toggle";
 
         /**
-         * Whether Status bar should be hiidden when there are no
-         * notifications
-         * @hide
-         */
-        public static final String AUTO_HIDE_STATUSBAR = "auto_hide_statusbar";
-
-        /**
          * Select Classic Recents menu style [GB-]
          * @hide
          */
         public static final String CLASSIC_RECENTS_MENU = "classic_recents_menu";
-
-         /**
-         * Whether Status Bar is currently hidden or not
-         * @hide
-         */
-        public static final String HIDE_STATUSBAR = "hide_statusbar";
 
          /**
          * @hide

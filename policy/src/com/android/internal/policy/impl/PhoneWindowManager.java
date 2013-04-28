@@ -417,8 +417,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
         }
     }
 
-    boolean mHideStatusBar;
-
     private static final class PointerLocationInputEventReceiver extends InputEventReceiver {
         private final PointerLocationView mView;
 
@@ -727,8 +725,6 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.EXPANDED_DESKTOP_STATE), false, this,
                     UserHandle.USER_ALL); 
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.HIDE_STATUSBAR), false, this); 
 
             updateSettings();
         }
@@ -3862,9 +3858,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 if (topIsFullscreen || (Settings.System.getInt(mContext.getContentResolver(),
                                         Settings.System.EXPANDED_DESKTOP_STATE, 0) == 1 &&
                                         Settings.System.getInt(mContext.getContentResolver(),
-                                        Settings.System.EXPANDED_DESKTOP_STYLE, 0) == 2 ||
-                                        Settings.System.getInt(mContext.getContentResolver(),
-                                        Settings.System.HIDE_STATUSBAR, 0) == 1)) {
+                                        Settings.System.EXPANDED_DESKTOP_STYLE, 0) == 2)) {
                     if (DEBUG_LAYOUT) Log.v(TAG, "** HIDING status bar");
                     if (mStatusBar.hideLw(true)) {
                         changes |= FINISH_LAYOUT_REDO_LAYOUT;
