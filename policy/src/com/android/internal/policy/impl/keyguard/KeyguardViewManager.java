@@ -261,6 +261,10 @@ public class KeyguardViewManager {
 
         @Override
         public boolean dispatchTouchEvent(MotionEvent event) {
+
+            // get user timeout, default at 5 sec.
+            int mHiddenStatusbarPulldownTimeout = (Settings.System.getInt(getContentResolver(),
+                Settings.System.HIDDEN_STATUSBAR_PULLDOWN_TIMEOUT, 5000));
             if (mKeyguardView != null) {
                 switch (event.getAction())
                 {
@@ -294,7 +298,8 @@ public class KeyguardViewManager {
                                         Settings.System.putBoolean(mContext.getContentResolver(), 
                                             Settings.System.STATUSBAR_HIDDEN_NOW, true);
                                     }               
-                                }, 5000);
+                                // User picked timeout here
+                                }, mHiddenStatusbarPulldownTimeout);
                             }
                             
                             mightBeMyGesture = false;

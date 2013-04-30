@@ -4039,6 +4039,12 @@ public final class Settings {
         public static final String HIDDEN_STATUSBAR_PULLDOWN = "hidden_statusbar_pulldown";
 
         /**
+         * Allows hidden Statusbar timeout to be configured
+         * @hide
+         */
+        public static final String HIDDEN_STATUSBAR_PULLDOWN_TIMEOUT = "hidden_statusbar_pulldown_timeout";
+
+        /**
          * Settings to backup. This is here so that it's in the same place as the settings
          * keys and easy to update.
          *
