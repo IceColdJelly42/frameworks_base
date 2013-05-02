@@ -49,7 +49,6 @@ import android.os.Parcelable;
 import android.os.RemoteException;
 import android.os.StrictMode;
 import android.os.UserHandle;
-import android.provider.Settings;
 import android.text.Selection;
 import android.text.SpannableStringBuilder;
 import android.text.TextUtils;
@@ -2399,6 +2398,7 @@ public class Activity extends ContextThemeWrapper
     boolean mightBeMyGesture = false;
     float tStatus;
     boolean isFullScreenApp = false;
+    int swipeTimeout = 5000;
     
     /**
      * Called to process touch screen events.  You can override this to
@@ -2411,12 +2411,6 @@ public class Activity extends ContextThemeWrapper
      * @return boolean Return true if this event was consumed.
      */
     public boolean dispatchTouchEvent(MotionEvent ev) {
-            boolean mHiddenStatusbarPulldown = (Settings.System.getInt(getContentResolver(),
-                Settings.System.HIDDEN_STATUSBAR_PULLDOWN, 0) == 1);
-            // get user timeout, default at 5 sec.
-            int mHiddenStatusbarPulldownTimeout = (Settings.System.getInt(getContentResolver(),
-                Settings.System.HIDDEN_STATUSBAR_PULLDOWN_TIMEOUT, 5000));
-
             switch (ev.getAction())
             {
                 case MotionEvent.ACTION_DOWN:
@@ -2430,14 +2424,17 @@ public class Activity extends ContextThemeWrapper
                                 Settings.System.STATUSBAR_SWIPE_FOR_FULLSCREEN, false);
                         
                         if (swipeEnabled){
+                            // get user timeout, default at 5 sec.
+                            swipeTimeout = Settings.System.getInt(getContentResolver(),
+                                Settings.System.HIDDEN_STATUSBAR_PULLDOWN_TIMEOUT, 5000);
                             mightBeMyGesture = true;
                         }
-                        
+
                         return true;
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if (mightBeMyGesture && mHiddenStatusbarPulldown)
+                    if (mightBeMyGesture)
                     {
                         if(ev.getY() > tStatus)
                         {
@@ -2453,10 +2450,11 @@ public class Activity extends ContextThemeWrapper
                                         getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
                                     } 
                                 }               
-                            // User picked timeout here
-                            }, mHiddenStatusbarPulldownTimeout);
+                            }, swipeTimeout);
                         }
+
                         mightBeMyGesture = false;
+
                         return true;
                     }
                     break;
