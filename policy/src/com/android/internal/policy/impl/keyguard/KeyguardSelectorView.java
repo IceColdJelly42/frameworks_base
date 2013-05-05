@@ -90,7 +90,6 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
     private String[] customIcons = new String[8];
     private UnlockReceiver receiver;
     private IntentFilter filter;
-    private boolean receiverUnregistered = false;
 
     private class H extends Handler {
         public void handleMessage(Message m) {
@@ -142,20 +141,14 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
                 if (!mGlowPadLock) {
                     mGlowPadLock = true;
                     mLongPress = true;
-                    if (!receiverUnregistered){
-                    	mContext.unregisterReceiver(receiver);
-                    	receiverUnregistered = true;
-                    }
+                    mContext.unregisterReceiver(receiver);
                     launchAction(longActivities[mTarget]);
                 }
             }
         };
 
         public void onTrigger(View v, int target) {
-        	if (!receiverUnregistered){
-            	mContext.unregisterReceiver(receiver);
-            	receiverUnregistered = true;
-            }
+            mContext.unregisterReceiver(receiver);
             if ((!mUsesCustomTargets) || (mTargetCounter() == 0 && mUnlockCounter() < 2)) {
                 mCallback.userActivity(0);
                 mCallback.dismiss(false);
@@ -557,10 +550,7 @@ public class KeyguardSelectorView extends LinearLayout implements KeyguardSecuri
                     mCallback.dismiss(false);
                 }
             }
-            if (!receiverUnregistered){
-            	mContext.unregisterReceiver(receiver);
-            	receiverUnregistered = true;
-            }
+            mContext.unregisterReceiver(receiver);
         }
     }
 }
