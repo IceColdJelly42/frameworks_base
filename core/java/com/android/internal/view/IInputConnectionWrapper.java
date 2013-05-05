@@ -32,6 +32,7 @@ import java.lang.ref.WeakReference;
 
 public class IInputConnectionWrapper extends IInputContext.Stub {
     static final String TAG = "IInputConnectionWrapper";
+    private boolean DEBUG = false;
 
     private static final int DO_GET_TEXT_AFTER_CURSOR = 10;
     private static final int DO_GET_TEXT_BEFORE_CURSOR = 20;
@@ -195,7 +196,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
                 try {
                     InputConnection ic = mInputConnection.get();
                     if (ic == null || !isActive()) {
-                        Log.w(TAG, "getTextAfterCursor on inactive InputConnection");
+                        if (DEBUG) Log.w(TAG, "getTextAfterCursor on inactive InputConnection");
                         args.callback.setTextAfterCursor(null, args.seq);
                         return;
                     }
@@ -211,7 +212,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
                 try {
                     InputConnection ic = mInputConnection.get();
                     if (ic == null || !isActive()) {
-                        Log.w(TAG, "getTextBeforeCursor on inactive InputConnection");
+                        if (DEBUG) Log.w(TAG, "getTextBeforeCursor on inactive InputConnection");
                         args.callback.setTextBeforeCursor(null, args.seq);
                         return;
                     }
@@ -227,7 +228,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
                 try {
                     InputConnection ic = mInputConnection.get();
                     if (ic == null || !isActive()) {
-                        Log.w(TAG, "getSelectedText on inactive InputConnection");
+                        if (DEBUG) Log.w(TAG, "getSelectedText on inactive InputConnection");
                         args.callback.setSelectedText(null, args.seq);
                         return;
                     }
@@ -243,7 +244,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
                 try {
                     InputConnection ic = mInputConnection.get();
                     if (ic == null || !isActive()) {
-                        Log.w(TAG, "getCursorCapsMode on inactive InputConnection");
+                        if (DEBUG) Log.w(TAG, "getCursorCapsMode on inactive InputConnection");
                         args.callback.setCursorCapsMode(0, args.seq);
                         return;
                     }
@@ -259,7 +260,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
                 try {
                     InputConnection ic = mInputConnection.get();
                     if (ic == null || !isActive()) {
-                        Log.w(TAG, "getExtractedText on inactive InputConnection");
+                        if (DEBUG) Log.w(TAG, "getExtractedText on inactive InputConnection");
                         args.callback.setExtractedText(null, args.seq);
                         return;
                     }
@@ -273,7 +274,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
             case DO_COMMIT_TEXT: {
                 InputConnection ic = mInputConnection.get();
                 if (ic == null || !isActive()) {
-                    Log.w(TAG, "commitText on inactive InputConnection");
+                    if (DEBUG) Log.w(TAG, "commitText on inactive InputConnection");
                     return;
                 }
                 ic.commitText((CharSequence)msg.obj, msg.arg1);
@@ -282,7 +283,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
             case DO_SET_SELECTION: {
                 InputConnection ic = mInputConnection.get();
                 if (ic == null || !isActive()) {
-                    Log.w(TAG, "setSelection on inactive InputConnection");
+                    if (DEBUG) Log.w(TAG, "setSelection on inactive InputConnection");
                     return;
                 }
                 ic.setSelection(msg.arg1, msg.arg2);
@@ -291,7 +292,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
             case DO_PERFORM_EDITOR_ACTION: {
                 InputConnection ic = mInputConnection.get();
                 if (ic == null || !isActive()) {
-                    Log.w(TAG, "performEditorAction on inactive InputConnection");
+                    if (DEBUG) Log.w(TAG, "performEditorAction on inactive InputConnection");
                     return;
                 }
                 ic.performEditorAction(msg.arg1);
@@ -300,7 +301,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
             case DO_PERFORM_CONTEXT_MENU_ACTION: {
                 InputConnection ic = mInputConnection.get();
                 if (ic == null || !isActive()) {
-                    Log.w(TAG, "performContextMenuAction on inactive InputConnection");
+                    if (DEBUG) Log.w(TAG, "performContextMenuAction on inactive InputConnection");
                     return;
                 }
                 ic.performContextMenuAction(msg.arg1);
@@ -309,7 +310,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
             case DO_COMMIT_COMPLETION: {
                 InputConnection ic = mInputConnection.get();
                 if (ic == null || !isActive()) {
-                    Log.w(TAG, "commitCompletion on inactive InputConnection");
+                    if (DEBUG) Log.w(TAG, "commitCompletion on inactive InputConnection");
                     return;
                 }
                 ic.commitCompletion((CompletionInfo)msg.obj);
@@ -318,7 +319,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
             case DO_COMMIT_CORRECTION: {
                 InputConnection ic = mInputConnection.get();
                 if (ic == null || !isActive()) {
-                    Log.w(TAG, "commitCorrection on inactive InputConnection");
+                    if (DEBUG) Log.w(TAG, "commitCorrection on inactive InputConnection");
                     return;
                 }
                 ic.commitCorrection((CorrectionInfo)msg.obj);
@@ -327,7 +328,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
             case DO_SET_COMPOSING_TEXT: {
                 InputConnection ic = mInputConnection.get();
                 if (ic == null || !isActive()) {
-                    Log.w(TAG, "setComposingText on inactive InputConnection");
+                    if (DEBUG) Log.w(TAG, "setComposingText on inactive InputConnection");
                     return;
                 }
                 ic.setComposingText((CharSequence)msg.obj, msg.arg1);
@@ -336,7 +337,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
             case DO_SET_COMPOSING_REGION: {
                 InputConnection ic = mInputConnection.get();
                 if (ic == null || !isActive()) {
-                    Log.w(TAG, "setComposingRegion on inactive InputConnection");
+                    if (DEBUG) Log.w(TAG, "setComposingRegion on inactive InputConnection");
                     return;
                 }
                 ic.setComposingRegion(msg.arg1, msg.arg2);
@@ -349,7 +350,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
                 // through to clean up our state after the IME has switched to
                 // another client.
                 if (ic == null) {
-                    Log.w(TAG, "finishComposingText on inactive InputConnection");
+                    if (DEBUG) Log.w(TAG, "finishComposingText on inactive InputConnection");
                     return;
                 }
                 ic.finishComposingText();
@@ -358,7 +359,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
             case DO_SEND_KEY_EVENT: {
                 InputConnection ic = mInputConnection.get();
                 if (ic == null || !isActive()) {
-                    Log.w(TAG, "sendKeyEvent on inactive InputConnection");
+                    if (DEBUG) Log.w(TAG, "sendKeyEvent on inactive InputConnection");
                     return;
                 }
                 ic.sendKeyEvent((KeyEvent)msg.obj);
@@ -367,7 +368,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
             case DO_CLEAR_META_KEY_STATES: {
                 InputConnection ic = mInputConnection.get();
                 if (ic == null || !isActive()) {
-                    Log.w(TAG, "clearMetaKeyStates on inactive InputConnection");
+                    if (DEBUG) Log.w(TAG, "clearMetaKeyStates on inactive InputConnection");
                     return;
                 }
                 ic.clearMetaKeyStates(msg.arg1);
@@ -376,7 +377,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
             case DO_DELETE_SURROUNDING_TEXT: {
                 InputConnection ic = mInputConnection.get();
                 if (ic == null || !isActive()) {
-                    Log.w(TAG, "deleteSurroundingText on inactive InputConnection");
+                    if (DEBUG) Log.w(TAG, "deleteSurroundingText on inactive InputConnection");
                     return;
                 }
                 ic.deleteSurroundingText(msg.arg1, msg.arg2);
@@ -385,7 +386,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
             case DO_BEGIN_BATCH_EDIT: {
                 InputConnection ic = mInputConnection.get();
                 if (ic == null || !isActive()) {
-                    Log.w(TAG, "beginBatchEdit on inactive InputConnection");
+                    if (DEBUG) Log.w(TAG, "beginBatchEdit on inactive InputConnection");
                     return;
                 }
                 ic.beginBatchEdit();
@@ -394,7 +395,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
             case DO_END_BATCH_EDIT: {
                 InputConnection ic = mInputConnection.get();
                 if (ic == null || !isActive()) {
-                    Log.w(TAG, "endBatchEdit on inactive InputConnection");
+                    if (DEBUG) Log.w(TAG, "endBatchEdit on inactive InputConnection");
                     return;
                 }
                 ic.endBatchEdit();
@@ -403,7 +404,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
             case DO_REPORT_FULLSCREEN_MODE: {
                 InputConnection ic = mInputConnection.get();
                 if (ic == null || !isActive()) {
-                    Log.w(TAG, "showStatusIcon on inactive InputConnection");
+                    if (DEBUG) Log.w(TAG, "showStatusIcon on inactive InputConnection");
                     return;
                 }
                 ic.reportFullscreenMode(msg.arg1 == 1);
@@ -412,7 +413,7 @@ public class IInputConnectionWrapper extends IInputContext.Stub {
             case DO_PERFORM_PRIVATE_COMMAND: {
                 InputConnection ic = mInputConnection.get();
                 if (ic == null || !isActive()) {
-                    Log.w(TAG, "performPrivateCommand on inactive InputConnection");
+                    if (DEBUG) Log.w(TAG, "performPrivateCommand on inactive InputConnection");
                     return;
                 }
                 SomeArgs args = (SomeArgs)msg.obj;

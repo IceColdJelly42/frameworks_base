@@ -446,12 +446,12 @@ public class ProcessStats {
                         st.base_utime = procStats[PROCESS_FULL_STAT_UTIME];
                         st.base_stime = procStats[PROCESS_FULL_STAT_STIME];
                     } else {
-                        Slog.i(TAG, "Skipping kernel process pid " + pid
+                        if (DEBUG) Slog.i(TAG, "Skipping kernel process pid " + pid
                                 + " name " + procStatsString[0]);
                         st.baseName = procStatsString[0];
                     }
                 } else {
-                    Slog.w(TAG, "Skipping unknown process pid " + pid);
+                    if (DEBUG) Slog.w(TAG, "Skipping unknown process pid " + pid);
                     st.baseName = "<unknown>";
                     st.base_utime = st.base_stime = 0;
                     st.base_minfaults = st.base_majfaults = 0;
