@@ -330,6 +330,9 @@ public class PhoneStatusBar extends BaseStatusBar {
     CustomTheme mCurrentTheme;
     private boolean mRecreating = false;
 
+    // notification shade dimming
+    private static boolean mNotificationShadeDim;
+
     // for disabling the status bar
     int mDisabled = 0;
 
@@ -3143,6 +3146,8 @@ public class PhoneStatusBar extends BaseStatusBar {
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.NAV_HIDE_TIMEOUT), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NOTIFICATION_SHADE_DIM), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.RIBBON_TARGETS_SHORT[AokpRibbonHelper.NOTIFICATIONS]), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.RIBBON_TARGETS_LONG[AokpRibbonHelper.NOTIFICATIONS]), false, this);
@@ -3192,6 +3197,7 @@ public class PhoneStatusBar extends BaseStatusBar {
                                     Settings.Secure.UI_MODE_IS_TOGGLED, 0) == 1;
             updateSettings();
             updateStatusBarVisibility();
+            update();
         }
 
         public void update() {
@@ -3200,6 +3206,8 @@ public class PhoneStatusBar extends BaseStatusBar {
                     Settings.System.NOTIFICATION_SHORTCUTS_TOGGLE, 0, UserHandle.USER_CURRENT) != 0;
             mNotificationShortcutsHideCarrier = Settings.System.getIntForUser(resolver,
                     Settings.System.NOTIFICATION_SHORTCUTS_HIDE_CARRIER, 0, UserHandle.USER_CURRENT) != 0;
+            mNotificationShadeDim = Settings.System.getInt(resolver,
+                    Settings.System.NOTIFICATION_SHADE_DIM, ActivityManager.isHighEndGfx() ? 1 : 0) == 1;
             if (mCarrierLabel != null) {
                 toggleCarrierAndWifiLabelVisibility();
             }
@@ -3249,6 +3257,10 @@ public class PhoneStatusBar extends BaseStatusBar {
             disableAutoHide();
         }
         updateRibbonTargets();
+    }
+
+    static public boolean shouldNotificationShadeDim() {
+        return mNotificationShadeDim;
     }
 
     public boolean skipToSettingsPanel() {
