@@ -107,6 +107,7 @@ public class KeyguardViewManager {
             if(mViewManager != null && mKeyguardHost != null) {
                 mViewManager.updateViewLayout(mKeyguardHost, mWindowLayoutParams);
             }
+            mKeyguardHost.restoreHierarchyState(mStateContainer);
         }
     }
 
