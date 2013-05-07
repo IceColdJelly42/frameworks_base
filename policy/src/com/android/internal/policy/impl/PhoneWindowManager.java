@@ -1105,16 +1105,22 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     break;
                 case KEY_ACTION_NOTIFICATIONS:
                     try {
+                        // makes no sense for fullscreen apps           
+                        if (mTopIsFullscreen){
+                            break;
+                        }
+
                         IStatusBarService statusbar = getStatusBarService();
                         if (statusbar != null) {
-                        	boolean settingStatusbarHidden = Settings.System.getBoolean(mContext.getContentResolver(), 
-                        		Settings.System.STATUSBAR_HIDDEN_NOW, false);
-                			
-                			if (settingStatusbarHidden){
-                				Settings.System.putBoolean(mContext.getContentResolver(),
-                    				Settings.System.STATUSBAR_HIDDEN_NOW, false);
-                			}
-                			
+                            // if statusbar currently hidden show it now
+                            boolean settingStatusbarHidden = Settings.System.getBoolean(mContext.getContentResolver(), 
+                                Settings.System.STATUSBAR_HIDDEN_NOW, false);
+
+                            if (settingStatusbarHidden){
+                                Settings.System.putBoolean(mContext.getContentResolver(),
+                                    Settings.System.STATUSBAR_HIDDEN_NOW, false);
+                            }
+
                             statusbar.toggleNotificationShade();                            
                         }
                     } catch (RemoteException e) {
