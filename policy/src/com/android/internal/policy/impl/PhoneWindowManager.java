@@ -1107,7 +1107,15 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     try {
                         IStatusBarService statusbar = getStatusBarService();
                         if (statusbar != null) {
-                            statusbar.toggleNotificationShade();
+                        	boolean settingStatusbarHidden = Settings.System.getBoolean(mContext.getContentResolver(), 
+                        		Settings.System.STATUSBAR_HIDDEN_NOW, false);
+                			
+                			if (settingStatusbarHidden){
+                				Settings.System.putBoolean(mContext.getContentResolver(),
+                    				Settings.System.STATUSBAR_HIDDEN_NOW, false);
+                			}
+                			
+                            statusbar.toggleNotificationShade();                            
                         }
                     } catch (RemoteException e) {
                         Slog.e(TAG, "RemoteException when toggling notification shade", e);
