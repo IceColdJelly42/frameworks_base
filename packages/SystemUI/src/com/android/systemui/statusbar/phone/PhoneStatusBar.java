@@ -3191,12 +3191,13 @@ public class PhoneStatusBar extends BaseStatusBar {
                     Settings.System.STATUSBAR_AUTO_EXPAND_HIDDEN), false, this);
         }
 
-         @Override
+        @Override
         public void onChange(boolean selfChange) {
             boolean uiModeIsToggled = Settings.Secure.getInt(mContext.getContentResolver(),
                                     Settings.Secure.UI_MODE_IS_TOGGLED, 0) == 1;
             if (uiModeIsToggled != mUiModeIsToggled) {
                 recreateStatusBar();
+            }
 
             updateSettings();
             updateStatusBarVisibility();
