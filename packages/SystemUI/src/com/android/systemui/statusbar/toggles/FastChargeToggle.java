@@ -27,7 +27,7 @@ public class FastChargeToggle extends StatefulToggle {
     private boolean mFastChargeEnabled = false;
 
     @Override
-    protected void init(Context c, int style) {
+    public void init(Context c, int style) {
         super.init(c, style);
         
         mContext = c;
