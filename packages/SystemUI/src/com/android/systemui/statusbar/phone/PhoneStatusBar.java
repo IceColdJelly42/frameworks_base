@@ -343,6 +343,8 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     private int mLastCount = -1;
     
+    private boolean mEnableAutoShowStatusbar = false;
+    
     // XXX: gesture research
     private final GestureRecorder mGestureRec = DEBUG_GESTURES
         ? new GestureRecorder("/sdcard/statusbar_gestures.dat") 
@@ -1322,9 +1324,7 @@ public class PhoneStatusBar extends BaseStatusBar {
     }
 
     private void updateStatusBarVisibility() {
-        if (Settings.System.getBoolean(mContext.getContentResolver(),
-                    Settings.System.STATUSBAR_AUTO_EXPAND_HIDDEN, false)) {
-
+        if (mEnableAutoShowStatusbar) {
             boolean hiddenStatusbar = (mNotificationData.size() == 0) ? true : false;
             
             if (Settings.System.getBoolean(mContext.getContentResolver(),
@@ -3312,6 +3312,9 @@ public class PhoneStatusBar extends BaseStatusBar {
             disableAutoHide();
         }
         updateRibbonTargets();
+        
+        mEnableAutoShowStatusbar = Settings.System.getBoolean(cr,
+                    Settings.System.STATUSBAR_AUTO_EXPAND_HIDDEN, false);
     }
 
     static public boolean shouldNotificationShadeDim() {
