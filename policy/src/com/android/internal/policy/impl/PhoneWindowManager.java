@@ -608,6 +608,9 @@ public class PhoneWindowManager implements WindowManagerPolicy {
     PowerManager.WakeLock mBroadcastWakeLock;
     boolean mHavePendingMediaKeyRepeatWithWakeLock;
 
+    private boolean mIsShowingHiddenWithSwipe = false;
+    private boolean mStatusbarHidden = false;
+    
     // Fallback actions by key code.
     private final SparseArray<KeyCharacterMap.FallbackAction> mFallbackActions =
             new SparseArray<KeyCharacterMap.FallbackAction>();
@@ -732,6 +735,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     Settings.System.HARDWARE_KEY_REBINDING), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_HIDDEN_NOW), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.STATUSBAR_SHOW_HIDDEN_WITH_SWIPE), false, this); 
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.EXPANDED_DESKTOP_STATE), false, this,
                     UserHandle.USER_ALL); 
@@ -1113,10 +1118,8 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                         IStatusBarService statusbar = getStatusBarService();
                         if (statusbar != null) {
                             // if statusbar currently hidden show it now
-                            boolean settingStatusbarHidden = Settings.System.getBoolean(mContext.getContentResolver(), 
-                                Settings.System.STATUSBAR_HIDDEN_NOW, false);
-
-                            if (settingStatusbarHidden){
+                            // TODO this will "disable" auto-hiding
+                            if (mStatusbarHidden){
                                 Settings.System.putBoolean(mContext.getContentResolver(),
                                     Settings.System.STATUSBAR_HIDDEN_NOW, false);
                             }
@@ -1763,6 +1766,12 @@ public class PhoneWindowManager implements WindowManagerPolicy {
             mNavBarAutoHide = NavHide;
             resetScreenHelper();
         }
+        
+        mIsShowingHiddenWithSwipe = Settings.System.getBoolean(mContext.getContentResolver(), 
+                        Settings.System.STATUSBAR_SHOW_HIDDEN_WITH_SWIPE, false);
+
+        mStatusbarHidden = Settings.System.getBoolean(mContext.getContentResolver(), 
+                        Settings.System.STATUSBAR_HIDDEN_NOW, false);
     }
 
     private void resetScreenHelper() {
@@ -3951,9 +3960,7 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                 // and mTopIsFullscreen is that that mTopIsFullscreen is set only if the window
                 // has the FLAG_FULLSCREEN set.  Not sure if there is another way that to be the
                 // case though.
-                    boolean settingStatusbarHidden = Settings.System.getBoolean(mContext.getContentResolver(), 
-                        Settings.System.STATUSBAR_HIDDEN_NOW, false);
-                if ((topIsFullscreen || settingStatusbarHidden) ||
+                if (!mIsShowingHiddenWithSwipe && (topIsFullscreen || mStatusbarHidden) ||
                                        (Settings.System.getInt(mContext.getContentResolver(),
                                         Settings.System.EXPANDED_DESKTOP_STATE, 0) == 1 &&
                                         Settings.System.getInt(mContext.getContentResolver(),
