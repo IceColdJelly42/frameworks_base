@@ -270,4 +270,11 @@ interface IWindowManager
      * YIPPIE KIE-YAY MOTHER FUCKER
      */
     void updateDisplayMetrics();
+
+    
+    void startSwipeTimer();
+    
+    void stopSwipeTimer();
+    
+    void resumeSwipeTimer();
 }

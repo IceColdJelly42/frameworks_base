@@ -1110,18 +1110,14 @@ public class PhoneWindowManager implements WindowManagerPolicy {
                     break;
                 case KEY_ACTION_NOTIFICATIONS:
                     try {
-                        // makes no sense for fullscreen apps           
-                        if (mTopIsFullscreen){
-                            break;
-                        }
-
                         IStatusBarService statusbar = getStatusBarService();
                         if (statusbar != null) {
                             // if statusbar currently hidden show it now
-                            // TODO this will "disable" auto-hiding
-                            if (mStatusbarHidden){
-                                Settings.System.putBoolean(mContext.getContentResolver(),
-                                    Settings.System.STATUSBAR_HIDDEN_NOW, false);
+                            // fake as a swipe to show it always
+                            try {
+                                mWindowManager.startSwipeTimer();
+                            } catch(RemoteException e){
+                                Log.e(TAG, "startSwipeTimer", e);
                             }
 
                             statusbar.toggleNotificationShade();                            

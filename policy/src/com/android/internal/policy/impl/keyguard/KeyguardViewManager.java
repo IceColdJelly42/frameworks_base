@@ -36,6 +36,8 @@ import android.os.Parcelable;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.os.SystemProperties;
+import android.os.ServiceManager;
+import android.os.RemoteException;
 import android.os.Vibrator;
 import android.provider.Settings;
 import android.util.Log;
@@ -48,6 +50,7 @@ import android.view.ViewGroup;
 import android.view.ViewManager;
 import android.view.WindowManager;
 import android.view.MotionEvent;
+import android.view.IWindowManager;
 import android.widget.FrameLayout;
 
 import com.android.internal.R;
@@ -83,7 +86,6 @@ public class KeyguardViewManager {
     private boolean mStatusbarHidden = false;
     private boolean mSwipeStatusbarEnabled = false;
     private boolean mLoockThroughEnabled = false;
-
     private boolean mUnlockKeyDown = false;
 
     public interface ShowListener {
@@ -130,7 +132,7 @@ public class KeyguardViewManager {
         mViewManager = viewManager;
         mViewMediatorCallback = callback;
         mLockPatternUtils = lockPatternUtils;
-
+        
         SettingsObserver observer = new SettingsObserver(new Handler());
         observer.observe();
         updateSettings();
@@ -222,10 +224,12 @@ public class KeyguardViewManager {
 
         private boolean mightBeMyGesture = false;
         private float tStatus;
-
+        private IWindowManager mWm;
+        
         public ViewManagerHost(Context context) {
             super(context);
             setFitsSystemWindows(true);
+            mWm = IWindowManager.Stub.asInterface(ServiceManager.getService("window"));
         }
 
         @Override
@@ -273,10 +277,6 @@ public class KeyguardViewManager {
 
         @Override
         public boolean dispatchTouchEvent(MotionEvent event) {
-
-            // get user timeout, default at 5 sec.
-            int mHiddenStatusbarPulldownTimeout = (Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.STATUSBAR_SWIPE_TIMEOUT, 5000));
             if (mKeyguardView != null) {
                 // maxwen: WHAT A HACK!!!
                 // TODO if we always would use WindowManager.LayoutParams.FLAG_FULLSCREEN;
@@ -292,34 +292,28 @@ public class KeyguardViewManager {
                         
                         tStatus = event.getY();
                         if (tStatus < getStatusBarHeight())
-                        {                        
+                        {
                             if (mSwipeStatusbarEnabled && mStatusbarHidden){
                                 mightBeMyGesture = true;
                             }
-                        
-                            return true;
                         }
                         break;
                     case MotionEvent.ACTION_MOVE:
                         if (mightBeMyGesture)
                         {
-                            if(event.getY() > tStatus)
+                     // wait for a minimal move else it can open too early
+                            if(event.getY() > (tStatus + 5))
                             {
-                                Settings.System.putBoolean(mContext.getContentResolver(), 
-                                    Settings.System.STATUSBAR_SHOW_HIDDEN_WITH_SWIPE, true);
-                                
-                                mKeyguardHost.postDelayed(new Runnable() {
-                                    public void run() {
-                                        Settings.System.putBoolean(mContext.getContentResolver(), 
-                                            Settings.System.STATUSBAR_SHOW_HIDDEN_WITH_SWIPE, false);
-                                    }               
-                                // User picked timeout here
-                                }, mHiddenStatusbarPulldownTimeout);
-                            }
+                                try {
+                                    mWm.startSwipeTimer();
+                                } catch(RemoteException e){
+                                    Log.e(TAG, "startSwipeTimer", e);
+                                }
                             
-                            mightBeMyGesture = false;
-                                
-                            return true;
+                                mightBeMyGesture = false;
+                                // dont send event further
+                                return true;
+                            }
                         }
                         break;
                     default:
@@ -338,6 +332,8 @@ public class KeyguardViewManager {
             return mContext.getResources().getDimensionPixelSize(com.android.internal.R.dimen.status_bar_height);
         }
     }
+
+    SparseArray<Parcelable> mStateContainer = new SparseArray<Parcelable>();
 
     public boolean handleKeyDown(int keyCode, KeyEvent event) {
         if (event.getRepeatCount() == 0) {
