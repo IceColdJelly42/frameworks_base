@@ -333,8 +333,6 @@ public class KeyguardViewManager {
         }
     }
 
-    SparseArray<Parcelable> mStateContainer = new SparseArray<Parcelable>();
-
     public boolean handleKeyDown(int keyCode, KeyEvent event) {
         if (event.getRepeatCount() == 0) {
             mUnlockKeyDown = true;
