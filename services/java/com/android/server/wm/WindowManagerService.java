@@ -6920,6 +6920,8 @@ public class WindowManagerService extends IWindowManager.Stub
         boolean rotated;
         int dh;
         int dw;
+        int appWidth;
+        int appHeight;
     }
 
         private ApplicationDisplayMetrics calculateDisplayMetrics(DisplayContent displayContent) {
@@ -6956,27 +6958,29 @@ public class WindowManagerService extends IWindowManager.Stub
 
 	private ApplicationDisplayMetrics updateApplicationDisplayMetricsLocked(
             DisplayContent displayContent) {
-		final ApplicationDisplayMetrics m = calculateDisplayMetrics(displayContent);
-        final int appWidth = mPolicy.getNonDecorDisplayWidth(m.dw, m.dh, mRotation);
-        final int appHeight = mPolicy.getNonDecorDisplayHeight(m.dw, m.dh, mRotation);
+        final ApplicationDisplayMetrics m = calculateDisplayMetrics(displayContent);
         final DisplayInfo displayInfo = displayContent.getDisplayInfo();
+
+        m.appWidth = mPolicy.getNonDecorDisplayWidth(m.dw, m.dh, mRotation);
+        m.appHeight = mPolicy.getNonDecorDisplayHeight(m.dw, m.dh, mRotation);
+
         synchronized(displayContent.mDisplaySizeLock) {
             displayInfo.rotation = mRotation;
             displayInfo.logicalWidth = m.dw;
             displayInfo.logicalHeight = m.dh;
             displayInfo.logicalDensityDpi = displayContent.mBaseDisplayDensity;
-            displayInfo.appWidth = appWidth;
-            displayInfo.appHeight = appHeight;
+            displayInfo.appWidth = m.appWidth;
+            displayInfo.appHeight = m.appHeight;
             displayInfo.getLogicalMetrics(mRealDisplayMetrics, null);
             displayInfo.getAppMetrics(mDisplayMetrics, null);
             mDisplayManagerService.setDisplayInfoOverrideFromWindowManager(
                     displayContent.getDisplayId(), displayInfo);
 
-            mAnimator.setDisplayDimensions(m.dw, m.dh, appWidth, appHeight);
+            mAnimator.setDisplayDimensions(m.dw, m.dh, m.appWidth, m.appHeight);
         }
 
         if (false) {
-            Slog.i(TAG, "Set app display size: " + appWidth + " x " + appHeight);
+            Slog.i(TAG, "Set app display size: " + m.appWidth + " x " + m.appHeight);
         }
 
         return m;
@@ -10484,10 +10488,24 @@ public class WindowManagerService extends IWindowManager.Stub
 
     public void updateDisplayMetrics() {
         long origId = Binder.clearCallingIdentity();
+        boolean changed = false;
 
         synchronized (mWindowMap) {
             final DisplayContent displayContent = getDefaultDisplayContentLocked();
-            updateApplicationDisplayMetricsLocked(displayContent);
+            final DisplayInfo displayInfo =
+                    displayContent != null ? displayContent.getDisplayInfo() : null;
+            final int oldWidth = displayInfo != null ? displayInfo.appWidth : -1;
+            final int oldHeight = displayInfo != null ? displayInfo.appHeight : -1;
+            final ApplicationDisplayMetrics metrics =
+                    updateApplicationDisplayMetricsLocked(displayContent);
+
+            if (metrics != null && oldWidth >= 0 && oldHeight >= 0) {
+                changed = oldWidth != metrics.appWidth || oldHeight != metrics.appHeight;
+            }
+        }
+
+        if (changed) {
+            mH.sendEmptyMessage(H.SEND_NEW_CONFIGURATION);
         }
 
     Binder.restoreCallingIdentity(origId);
