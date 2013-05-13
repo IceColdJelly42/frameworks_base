@@ -1342,6 +1342,9 @@ public class PhoneStatusBar extends BaseStatusBar {
                     Settings.System.STATUSBAR_HIDDEN_NOW, hiddenStatusbar);
             }
         }
+        if (mCarrierLabel != null) {
+            toggleCarrierAndWifiLabelVisibility();
+        }
     }
     
     private void loadNotificationShade() {
@@ -3204,20 +3207,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         public void onChange(boolean selfChange) {
             updateSettings();
             updateStatusBarVisibility();
-            update();
-        }
-
-        public void update() {
-            ContentResolver resolver = mContext.getContentResolver();
-            mNotificationShortcutsToggle = Settings.System.getIntForUser(resolver,
-                    Settings.System.NOTIFICATION_SHORTCUTS_TOGGLE, 0, UserHandle.USER_CURRENT) != 0;
-            mNotificationShortcutsHideCarrier = Settings.System.getIntForUser(resolver,
-                    Settings.System.NOTIFICATION_SHORTCUTS_HIDE_CARRIER, 0, UserHandle.USER_CURRENT) != 0;
-            mNotificationShadeDim = Settings.System.getInt(resolver,
-                    Settings.System.NOTIFICATION_SHADE_DIM, ActivityManager.isHighEndGfx() ? 1 : 0) == 1;
-            if (mCarrierLabel != null) {
-                toggleCarrierAndWifiLabelVisibility();
-            }
         }
     }
 
@@ -3264,6 +3253,13 @@ public class PhoneStatusBar extends BaseStatusBar {
         
         mEnableAutoShowStatusbar = Settings.System.getBoolean(cr,
                     Settings.System.STATUSBAR_AUTO_EXPAND_HIDDEN, false);
+
+        mNotificationShadeDim = Settings.System.getInt(cr,
+                    Settings.System.NOTIFICATION_SHADE_DIM, ActivityManager.isHighEndGfx() ? 1 : 0) == 1;
+        mNotificationShortcutsToggle = Settings.System.getIntForUser(cr,
+                    Settings.System.NOTIFICATION_SHORTCUTS_TOGGLE, 0, UserHandle.USER_CURRENT) != 0;
+        mNotificationShortcutsHideCarrier = Settings.System.getIntForUser(cr,
+                    Settings.System.NOTIFICATION_SHORTCUTS_HIDE_CARRIER, 0, UserHandle.USER_CURRENT) != 0;
     }
 
     static public boolean shouldNotificationShadeDim() {
