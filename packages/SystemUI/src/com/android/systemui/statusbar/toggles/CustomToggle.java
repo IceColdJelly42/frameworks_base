@@ -33,6 +33,7 @@ public class CustomToggle extends BaseToggle {
     public String[] mClickActions = new String[5];
     public String[] mLongActions = new String[5];
     public String[] mToggleIcons = new String[5];
+    public String[] mToggleText = new String[5];
 
     private int mDoubleClick;
     private int mNumberOfActions;
@@ -213,9 +214,7 @@ public class CustomToggle extends BaseToggle {
     private void startMagicTricks() {
         String iconUri = "";
         Drawable myIcon = null;
-        String toggleText = NavBarHelpers.getProperSummary(mContext,
-                "**null**".equals(mClickActions[mCustomState])
-                ? mLongActions[mCustomState] : mClickActions[mCustomState]);
+        String toggleText = mToggleText[mCustomState];
         iconUri = mToggleIcons[mCustomState];
         if (iconUri != null && iconUri.length() > 0) {
             File f = new File(Uri.parse(iconUri).getPath());
@@ -263,6 +262,8 @@ public class CustomToggle extends BaseToggle {
     private void updateSettings() {
         ContentResolver resolver = mContext.getContentResolver();
 
+        String mDefaultText = "CUSTOM";
+
         mActionRevert = Settings.System.getBoolean(resolver,
                 Settings.System.CUSTOM_TOGGLE_REVERT, false);
 
@@ -300,6 +301,13 @@ public class CustomToggle extends BaseToggle {
 
             mToggleIcons[j] = Settings.System.getString(resolver,
                     Settings.System.CUSTOM_TOGGLE_ICONS[j]);
+            mToggleText[j] = Settings.System.getString(resolver,
+                    Settings.System.CUSTOM_TOGGLE_TEXT[j]);
+            if (mToggleText[j] == null) {
+                mToggleText[j] = mDefaultText;
+                Settings.System.putString(resolver,
+                        Settings.System.CUSTOM_TOGGLE_TEXT[j], mToggleText[j]);
+            }
         }
         startMagicTricks();
     }
@@ -345,6 +353,12 @@ public class CustomToggle extends BaseToggle {
                         Settings.System.getUriFor(Settings.System.CUSTOM_TOGGLE_ICONS[j]),
                         false,
                         this);
+                resolver.registerContentObserver(
+                        Settings.System
+                                .getUriFor(Settings.System.CUSTOM_TOGGLE_TEXT[j]),
+                        false,
+                        this);
+
                 resolver.registerContentObserver(
                         Settings.System
                                 .getUriFor(Settings.System.CUSTOM_LONGPRESS_TOGGLE[j]),
