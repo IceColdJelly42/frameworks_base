@@ -4026,15 +4026,6 @@ public final class Settings {
         public static final String LOCKSCREEN_VIBRATE_ENABLED = "lockscreen.vibrate_enabled";
 
         /**
-        * MediaScanner behavior on boot.
-        * 0 = enabled
-        * 1 = ask (notification)
-        * 2 = disabled
-        * @hide
-        */
-        public static final String MEDIA_SCANNER_ON_BOOT = "media_scanner_on_boot";
-
-        /**
          * Used as a flag to determine if we have statusbar hidden now
          * @hide
          */
