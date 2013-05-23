@@ -30,6 +30,7 @@ import android.media.AudioManager;
 import android.media.IAudioService;
 import android.os.RemoteException;
 import android.os.ServiceManager;
+import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -52,7 +53,7 @@ import java.io.File;
  */
 public abstract class KeyguardViewBase extends FrameLayout {
 
-    private static final int BACKGROUND_COLOR = 0x70000000;
+    private static int BACKGROUND_COLOR = 112;
     private static final String WALLPAPER_IMAGE_PATH = "/data/data/com.aokp.romcontrol/files/lockscreen_wallpaper.jpg";
     private AudioManager mAudioManager;
     private TelephonyManager mTelephonyManager = null;
@@ -69,7 +70,7 @@ public abstract class KeyguardViewBase extends FrameLayout {
     private static final Drawable mBackgroundDrawable = new Drawable() {
         @Override
         public void draw(Canvas canvas) {
-            canvas.drawColor(BACKGROUND_COLOR, PorterDuff.Mode.SRC);
+            canvas.drawColor(BACKGROUND_COLOR<<24, PorterDuff.Mode.SRC);
         }
 
         @Override
@@ -99,6 +100,8 @@ public abstract class KeyguardViewBase extends FrameLayout {
         File file = new File(WALLPAPER_IMAGE_PATH);
 
         if (file.exists()) {
+            BACKGROUND_COLOR = Settings.System.getInt(getContext().getContentResolver(),
+                Settings.System.LOCKSCREEN_ALPHA_CONFIG, 112);
             setBackground(null);
             mLockScreenWallpaperImage = new ImageView(getContext());
             mLockScreenWallpaperImage.setScaleType(ScaleType.CENTER_CROP);
@@ -107,6 +110,9 @@ public abstract class KeyguardViewBase extends FrameLayout {
             Drawable d = new BitmapDrawable(getResources(), bitmapWallpaper);
             mLockScreenWallpaperImage.setImageDrawable(d);
         } else {
+            BACKGROUND_COLOR = Settings.System.getInt(getContext().getContentResolver(),
+                Settings.System.LOCKSCREEN_ALPHA_CONFIG, 112);
+            setBackground(mBackgroundDrawable);
             setBackground(mBackgroundDrawable);
             removeView(mLockScreenWallpaperImage);
         }
