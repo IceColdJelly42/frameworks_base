@@ -1633,6 +1633,10 @@ public class PhoneStatusBar extends BaseStatusBar {
         final int diff = state ^ old;
         mDisabled = state;
 
+        mAokpSwipeRibbonBottom.setDisabledFlags(state);
+        mAokpSwipeRibbonLeft.setDisabledFlags(state);
+        mAokpSwipeRibbonRight.setDisabledFlags(state);
+
         if (DEBUG) {
             Slog.d(TAG, String.format("disable: 0x%08x -> 0x%08x (diff: 0x%08x)",
                 old, state, diff));
@@ -2026,7 +2030,7 @@ public class PhoneStatusBar extends BaseStatusBar {
                     Settings.System.getBoolean(cr,
                          Settings.System.RIBBON_ICON_VIBRATE[AokpRibbonHelper.QUICK_SETTINGS], true),
                     Settings.System.getBoolean(cr,
-                         Settings.System.RIBBON_ICON_COLORIZE[AokpRibbonHelper.QUICK_SETTINGS], false)));
+                         Settings.System.RIBBON_ICON_COLORIZE[AokpRibbonHelper.QUICK_SETTINGS], false), 0));
             }
             mRibbonNotif.removeAllViews();
             mRibbonNotif.addView(AokpRibbonHelper.getRibbon(mContext,
@@ -2047,7 +2051,7 @@ public class PhoneStatusBar extends BaseStatusBar {
                 Settings.System.getBoolean(cr,
                      Settings.System.RIBBON_ICON_VIBRATE[AokpRibbonHelper.NOTIFICATIONS], true),
                 Settings.System.getBoolean(cr,
-                     Settings.System.RIBBON_ICON_COLORIZE[AokpRibbonHelper.NOTIFICATIONS], false)));
+                     Settings.System.RIBBON_ICON_COLORIZE[AokpRibbonHelper.NOTIFICATIONS], false), 0));
     }
 
     public void updateRibbon() {
@@ -2422,6 +2426,7 @@ public class PhoneStatusBar extends BaseStatusBar {
 
     @Override // CommandQueue
     public void setNavigationIconHints(int hints) {
+
         if (hints == mNavigationIconHints) return;
 
         mNavigationIconHints = hints;
@@ -2540,6 +2545,10 @@ public class PhoneStatusBar extends BaseStatusBar {
     public void setImeWindowStatus(IBinder token, int vis, int backDisposition) {
         boolean altBack = (backDisposition == InputMethodService.BACK_DISPOSITION_WILL_DISMISS)
             || ((vis & InputMethodService.IME_VISIBLE) != 0);
+
+        mAokpSwipeRibbonBottom.setNavigationIconHints(vis);
+        mAokpSwipeRibbonLeft.setNavigationIconHints(vis);
+        mAokpSwipeRibbonRight.setNavigationIconHints(vis);
 
         mCommandQueue.setNavigationIconHints(
                 altBack ? (mNavigationIconHints | StatusBarManager.NAVIGATION_HINT_BACK_ALT)
