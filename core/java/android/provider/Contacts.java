@@ -316,6 +316,16 @@ public class Contacts {
         public static final String CUSTOM_VIBRATION = "custom_vibration";
 
         /**
+         * URI for a custom notification associated with the contact. If null or missing,
+         * the default notification is used.
+         * <P>Type: TEXT (URI to the notification)</P>
+         * @deprecated see {@link android.provider.ContactsContract}
+         */
+
+        @Deprecated
+        public static final String CUSTOM_NOTIFICATION = "custom_notification";
+
+        /**
          * Whether the person should always be sent to voicemail. Not always
          * present.
          * <P>Type: INTEGER (0 for false, 1 for true)</P>

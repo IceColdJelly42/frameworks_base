@@ -104,6 +104,7 @@ public class CallerInfo {
     // uri reference.
     public Uri contactRingtoneUri;
     public Uri contactVibrationUri;
+    public Uri contactNotificationUri;
     public boolean shouldSendToVoicemail;
 
     /**
@@ -235,6 +236,15 @@ public class CallerInfo {
                     info.contactVibrationUri = Uri.parse(cursor.getString(columnIndex));
                 } else {
                     info.contactVibrationUri = null;
+                }
+
+                // look for the custom notification, create from the string stored
+                // in the database.
+                columnIndex = cursor.getColumnIndex(PhoneLookup.CUSTOM_NOTIFICATION);
+                if ((columnIndex != -1) && (cursor.getString(columnIndex) != null)) {
+                    info.contactNotificationUri = Uri.parse(cursor.getString(columnIndex));
+                } else {
+                    info.contactNotificationUri = null;
                 }
 
                 // look for the send to voicemail flag, set it to true only
@@ -615,6 +625,7 @@ public class CallerInfo {
                     .append("\ncontactRefUri: " + contactRefUri)
                     .append("\ncontactRingtoneUri: " + contactRingtoneUri)
                     .append("\ncontactVibrationUri: " + contactVibrationUri)
+                    .append("\ncontactNotificationUri: " + contactNotificationUri)
                     .append("\nshouldSendToVoicemail: " + shouldSendToVoicemail)
                     .append("\ncachedPhoto: " + cachedPhoto)
                     .append("\nisCachedPhotoCurrent: " + isCachedPhotoCurrent)
