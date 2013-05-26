@@ -159,6 +159,7 @@ final class DisplayPowerController {
     // are used to debounce the light sensor when adapting to brighter or darker environments.
     // This parameter controls how quickly brightness changes occur in response to
     // an observed change in light level that exceeds the hysteresis threshold.
+    private static final long BRIGHTENING_LIGHT_FAST_DEBOUNCE = 1000;
     private static final long BRIGHTENING_LIGHT_DEBOUNCE = 2000;
     private static final long DARKENING_LIGHT_DEBOUNCE = 2000;
 
@@ -167,6 +168,11 @@ final class DisplayPowerController {
     // current ambient lux before a change will be considered.
     private static final float BRIGHTENING_LIGHT_HYSTERESIS = 0.08f;
     private static final float DARKENING_LIGHT_HYSTERESIS = 0.08f;
+
+    // Threshold (in lux) to select between normal and fast debounce time.
+    // If the difference between short and long time average is larger than
+    // this value, fast debounce is used.
+    private static final float BRIGHTENING_FAST_THRESHOLD = 300f;
 
     private final Object mLock = new Object();
 
@@ -929,8 +935,11 @@ final class DisplayPowerController {
                 updateAutoBrightness = true;
                 mLightSensorEnabled = true;
                 mLightSensorEnableTime = SystemClock.uptimeMillis();
+
+                int updateRateMillis = (int)
+                        (mPowerRequest.responsitivityFactor * LIGHT_SENSOR_RATE_MILLIS);
                 mSensorManager.registerListener(mLightSensorListener, mLightSensor,
-                        LIGHT_SENSOR_RATE_MILLIS * 1000, mHandler);
+                        updateRateMillis * 1000, mHandler);
             }
         } else {
             if (mLightSensorEnabled) {
@@ -961,10 +970,20 @@ final class DisplayPowerController {
             mRecentLongTermAverageLux = lux;
         } else {
             final long timeDelta = time - mLastObservedLuxTime;
+            final long shortTermConstant = (long)
+                    (mPowerRequest.responsitivityFactor * SHORT_TERM_AVERAGE_LIGHT_TIME_CONSTANT);
+            final long longTermConstant = (long)
+                    (mPowerRequest.responsitivityFactor * LONG_TERM_AVERAGE_LIGHT_TIME_CONSTANT);
             mRecentShortTermAverageLux += (lux - mRecentShortTermAverageLux)
-                    * timeDelta / (SHORT_TERM_AVERAGE_LIGHT_TIME_CONSTANT + timeDelta);
+                    * timeDelta / (shortTermConstant + timeDelta);
             mRecentLongTermAverageLux += (lux - mRecentLongTermAverageLux)
-                    * timeDelta / (LONG_TERM_AVERAGE_LIGHT_TIME_CONSTANT + timeDelta);
+                    * timeDelta / (longTermConstant + timeDelta);
+        }
+
+        if (DEBUG) {
+            Slog.d(TAG, "applyLightSensorMeasurement: lux=" + lux
+                    + ", mRecentShortTermAverageLux=" + mRecentShortTermAverageLux
+                    +", mRecentLongTermAverageLux=" + mRecentLongTermAverageLux);
         }
 
         // Remember this sample value.
@@ -996,19 +1015,30 @@ final class DisplayPowerController {
         // Determine whether the ambient environment appears to be brightening.
         if (mRecentShortTermAverageLux > brighteningLuxThreshold
                 && mRecentLongTermAverageLux > brighteningLuxThreshold) {
+            long debounceDelay;
+
+            if (mRecentShortTermAverageLux - mRecentLongTermAverageLux > BRIGHTENING_FAST_THRESHOLD) {
+                debounceDelay = BRIGHTENING_LIGHT_FAST_DEBOUNCE;
+            } else {
+                debounceDelay = BRIGHTENING_LIGHT_DEBOUNCE;
+            }
+            debounceDelay = (long) (mPowerRequest.responsitivityFactor * debounceDelay);
+
             if (mDebounceLuxDirection <= 0) {
                 mDebounceLuxDirection = 1;
                 mDebounceLuxTime = time;
                 if (DEBUG) {
                     Slog.d(TAG, "updateAmbientLux: Possibly brightened, waiting for "
-                            + BRIGHTENING_LIGHT_DEBOUNCE + " ms: "
+                            + debounceDelay + " ms: "
                             + "brighteningLuxThreshold=" + brighteningLuxThreshold
                             + ", mRecentShortTermAverageLux=" + mRecentShortTermAverageLux
                             + ", mRecentLongTermAverageLux=" + mRecentLongTermAverageLux
                             + ", mAmbientLux=" + mAmbientLux);
                 }
             }
-            long debounceTime = mDebounceLuxTime + BRIGHTENING_LIGHT_DEBOUNCE;
+
+            long debounceTime = mDebounceLuxTime + debounceDelay;
+
             if (time >= debounceTime) {
                 mAmbientLux = mRecentShortTermAverageLux;
                 if (DEBUG) {
@@ -1031,19 +1061,21 @@ final class DisplayPowerController {
         // Determine whether the ambient environment appears to be darkening.
         if (mRecentShortTermAverageLux < darkeningLuxThreshold
                 && mRecentLongTermAverageLux < darkeningLuxThreshold) {
+            long debounceDelay = (long)
+                    (mPowerRequest.responsitivityFactor * DARKENING_LIGHT_DEBOUNCE);
             if (mDebounceLuxDirection >= 0) {
                 mDebounceLuxDirection = -1;
                 mDebounceLuxTime = time;
                 if (DEBUG) {
                     Slog.d(TAG, "updateAmbientLux: Possibly darkened, waiting for "
-                            + DARKENING_LIGHT_DEBOUNCE + " ms: "
+                            + debounceDelay + " ms: "
                             + "darkeningLuxThreshold=" + darkeningLuxThreshold
                             + ", mRecentShortTermAverageLux=" + mRecentShortTermAverageLux
                             + ", mRecentLongTermAverageLux=" + mRecentLongTermAverageLux
                             + ", mAmbientLux=" + mAmbientLux);
                 }
             }
-            long debounceTime = mDebounceLuxTime + DARKENING_LIGHT_DEBOUNCE;
+            long debounceTime = mDebounceLuxTime + debounceDelay;
             if (time >= debounceTime) {
                 // Be conservative about reducing the brightness, only reduce it a little bit
                 // at a time to avoid having to bump it up again soon.
@@ -1094,15 +1126,18 @@ final class DisplayPowerController {
                 Slog.d(TAG, "forceBrightnessUpdates mLastObservedLux="+mLastObservedLux+" darkeningLuxThreshold="+darkeningLuxThreshold +
                      " brighteningLuxThreshold="+brighteningLuxThreshold);
             }
-            mHandler.sendEmptyMessageAtTime(MSG_LIGHT_SENSOR_DEBOUNCED,
-                    time + SYNTHETIC_LIGHT_SENSOR_RATE_MILLIS);
+            long synthesizedDelay = (long)
+                    (mPowerRequest.responsitivityFactor * SYNTHETIC_LIGHT_SENSOR_RATE_MILLIS);
+            mHandler.sendEmptyMessageAtTime(MSG_LIGHT_SENSOR_DEBOUNCED, time + synthesizedDelay);
         }
     }
     
     private void debounceLightSensor() {
         if (mLightSensorEnabled) {
             long time = SystemClock.uptimeMillis();
-            if (time >= mLastObservedLuxTime + SYNTHETIC_LIGHT_SENSOR_RATE_MILLIS) {
+            long synthesizedDelay = (long)
+                    (mPowerRequest.responsitivityFactor * SYNTHETIC_LIGHT_SENSOR_RATE_MILLIS);
+            if (time >= mLastObservedLuxTime + synthesizedDelay) {
                 if (DEBUG) {
                     Slog.d(TAG, "debounceLightSensor: Synthesizing light sensor measurement "
                             + "after " + (time - mLastObservedLuxTime) + " ms.");
