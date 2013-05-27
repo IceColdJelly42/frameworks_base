@@ -110,6 +110,12 @@ public class Build {
          * a release build.
          */
         public static final String CODENAME = getString("ro.build.version.codename");
+        
+        /**
+         * The current version string that defines the icecold version
+         * the device is on
+         */ 
+          public static final String ICECOLD = getString("ro.icecold.version");
 
         /**
          * The SDK version to use when accessing resources.
