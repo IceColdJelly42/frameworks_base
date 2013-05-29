@@ -1252,6 +1252,9 @@ class GlobalActions implements DialogInterface.OnDismissListener, DialogInterfac
         private void updaHiddenStatusbar(boolean value) {
             Settings.System.putBoolean(mContext.getContentResolver(),
                     Settings.System.STATUSBAR_HIDDEN_NOW, value);
+            // always reset if global config changes
+            Settings.System.putBoolean(mContext.getContentResolver(),
+                    Settings.System.STATUSBAR_SHOW_HIDDEN_WITH_SWIPE, false);
         }
         
         public void onClick(View v) {

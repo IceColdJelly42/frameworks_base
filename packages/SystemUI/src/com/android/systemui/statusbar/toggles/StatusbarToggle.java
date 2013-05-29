@@ -33,12 +33,18 @@ public class StatusbarToggle extends StatefulToggle {
     protected void doEnable() {
         Settings.System.putBoolean(mContext.getContentResolver(),
                 Settings.System.STATUSBAR_HIDDEN_NOW, true);
+        // always reset if global config changes
+        Settings.System.putBoolean(mContext.getContentResolver(),
+                Settings.System.STATUSBAR_SHOW_HIDDEN_WITH_SWIPE, false);
     }
 
     @Override
     protected void doDisable() {
         Settings.System.putBoolean(mContext.getContentResolver(),
                 Settings.System.STATUSBAR_HIDDEN_NOW, false);
+        // always reset if global config changes
+        Settings.System.putBoolean(mContext.getContentResolver(),
+                Settings.System.STATUSBAR_SHOW_HIDDEN_WITH_SWIPE, false);
     }
 
     @Override

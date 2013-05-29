@@ -39,9 +39,12 @@ public class StatusbarToggleShortcut extends Activity  {
   public void onResume()  {
     super.onResume();
     boolean StatusbarState = Settings.System.getBoolean(getContentResolver(),
-      Settings.System.STATUSBAR_HIDDEN_NOW, false);
+        Settings.System.STATUSBAR_HIDDEN_NOW, false);
     Settings.System.putBoolean(getContentResolver(),
-      Settings.System.STATUSBAR_HIDDEN_NOW, !StatusbarState);
+        Settings.System.STATUSBAR_HIDDEN_NOW, !StatusbarState);
+    // always reset if global config changes
+    Settings.System.putBoolean(getContentResolver(),
+        Settings.System.STATUSBAR_SHOW_HIDDEN_WITH_SWIPE, false);
     this.finish();
   }
 }
