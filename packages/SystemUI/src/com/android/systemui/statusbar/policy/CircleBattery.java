@@ -412,6 +412,7 @@ public class CircleBattery extends ImageView {
 
     private void initSizeMeasureIconHeight() {
         int width = StatusBarHelpers.getIconWidth(mContext, mFontSize);
+        width += 4;
         getLayoutParams().width = width;
         getLayoutParams().height = width;
         mCircleSize = width;
