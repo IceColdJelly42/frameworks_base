@@ -2833,7 +2833,6 @@ public class PhoneStatusBar extends BaseStatusBar {
             public void run() {
                     doubleClickCounter = 0;
                     animateCollapsePanels();
-                    dismissKeyguard();
                     AwesomeAction.launchAction(mContext, mClockActions[shortClick]);
             }
         };
@@ -2851,7 +2850,6 @@ public class PhoneStatusBar extends BaseStatusBar {
                     mHandler.removeCallbacks(DelayShortPress);
                     vibrate();
                     animateCollapsePanels();
-                    dismissKeyguard();
                     AwesomeAction.launchAction(mContext, mClockActions[doubleClick]);
                     mHandler.postDelayed(ResetDoubleClickCounter, 50);
                 } else {
@@ -2862,7 +2860,6 @@ public class PhoneStatusBar extends BaseStatusBar {
             } else {
                 vibrate();
                 animateCollapsePanels();
-                dismissKeyguard();
                 AwesomeAction.launchAction(mContext, mClockActions[shortClick]);
             }
 
@@ -2873,7 +2870,6 @@ public class PhoneStatusBar extends BaseStatusBar {
         @Override
         public boolean onLongClick(View v) {
             animateCollapsePanels();
-            dismissKeyguard();
             AwesomeAction.launchAction(mContext, mClockActions[longClick]);
             return true;
         }
@@ -2884,12 +2880,6 @@ public class PhoneStatusBar extends BaseStatusBar {
             animateExpandNotificationsPanel();
         }
     };
-
-    private void dismissKeyguard() {
-        Intent u = new Intent();
-        u.setAction("com.android.lockscreen.ACTION_UNLOCK_RECEIVER");
-        mContext.sendBroadcastAsUser(u, UserHandle.ALL);
-    }
 
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         public void onReceive(Context context, Intent intent) {
