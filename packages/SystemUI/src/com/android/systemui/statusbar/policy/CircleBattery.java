@@ -40,6 +40,7 @@ import android.view.View;
 import android.widget.ImageView;
 
 import com.android.internal.R;
+import com.android.internal.util.aokp.StatusBarHelpers;
 
 /***
  * Note about CircleBattery Implementation:
@@ -83,6 +84,9 @@ public class CircleBattery extends ImageView {
     private int mCircleTextColor;
     private int mCircleAnimSpeed;
     private int mCircleReset;
+
+    private int mStockFontSize;
+    private int mFontSize;
 
     // runnable to invalidate view via mHandler.postDelayed() call
     private final Runnable mInvalidate = new Runnable() {
@@ -139,8 +143,8 @@ public class CircleBattery extends ImageView {
             }
 
             /*
-* initialize vars and force redraw
-*/
+             * initialize vars and force redraw
+             */
             initializeCircleVars();
             mCircleRect = null;
             mCircleSize = 0;
@@ -230,6 +234,7 @@ public class CircleBattery extends ImageView {
                     Settings.System.STATUSBAR_BATTERY_ICON, 0));
         mObserver = new SettingsObserver(mHandler);
         mBatteryReceiver = new BatteryReceiver(mContext);
+        mStockFontSize = StatusBarHelpers.pixelsToSp(mContext, 16f);
 
         initializeCircleVars();
     }
@@ -321,6 +326,9 @@ public class CircleBattery extends ImageView {
         // initialize and setup all paint variables
         // stroke width is later set in initSizeBasedStuff()
 
+        mFontSize = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.STATUSBAR_FONT_SIZE, mStockFontSize);
+
         Resources res = getResources();
 
         mPaintFont = new Paint();
@@ -380,47 +388,32 @@ public class CircleBattery extends ImageView {
             initSizeMeasureIconHeight();
         }
 
-        mPaintFont.setTextSize(mCircleSize / 2f);
+        float percentageFontSize = mCircleSize / 2.5f;
+        mPaintFont.setTextSize(percentageFontSize);
 
         float strokeWidth = mCircleSize / 7.5f;
         mPaintRed.setStrokeWidth(strokeWidth);
         mPaintSystem.setStrokeWidth(strokeWidth);
         mPaintGray.setStrokeWidth(strokeWidth / 3.27f);
         // calculate rectangle for drawArc calls
+        int pTop = getPaddingTop();
         int pLeft = getPaddingLeft();
-        mCircleRect = new RectF(pLeft + strokeWidth / 2.0f, 0 + strokeWidth / 2.0f, mCircleSize
-                - strokeWidth / 2.0f + pLeft, mCircleSize - strokeWidth / 2.0f);
+        mCircleRect = new RectF(pLeft + strokeWidth / 2.0f, pTop + strokeWidth / 2.0f, mCircleSize
+                - strokeWidth / 2.0f + pLeft - pTop, mCircleSize - strokeWidth / 2.0f);
 
         // calculate Y position for text
         Rect bounds = new Rect();
         mPaintFont.getTextBounds("99", 0, "99".length(), bounds);
-        mPercentX = mCircleSize / 2.0f + getPaddingLeft();
-        // the +1 at end of formular balances out rounding issues. works out on all resolutions
-        mPercentY = mCircleSize / 2.0f + (bounds.bottom - bounds.top) / 2.0f - strokeWidth / 2.0f + 1;
-
-        // force new measurement for wrap-content xml tag
-        onMeasure(0, 0);
+        
+        // needs center becaus of font allign
+        mPercentX = mCircleRect.left + mCircleRect.width() / 2.0f;
+        mPercentY = mCircleRect.top + mCircleRect.height() / 2.0f + bounds.height() / 2.0f - 1;
     }
 
-    /***
-     * we need to measure the size of the circle battery by checking another
-     * resource. unfortunately, those resources have transparent/empty borders
-     * so we have to count the used pixel manually and deduct the size from
-     * it. quiet complicated, but the only way to fit properly into the
-     * statusbar for all resolutions
-     */
     private void initSizeMeasureIconHeight() {
-        final Bitmap measure = BitmapFactory.decodeResource(getResources(),
-                com.android.systemui.R.drawable.stat_sys_wifi_signal_4_fully);
-        final int x = measure.getWidth() / 2;
-
-        mCircleSize = measure.getHeight();
-        /*mCircleSize = 0;
-        for (int y = 0; y < measure.getHeight(); y++) {
-            int alpha = Color.alpha(measure.getPixel(x, y));
-            if (alpha > 5) {
-                mCircleSize++;
-            }
-        }*/
+        int width = StatusBarHelpers.getIconWidth(mContext, mFontSize);
+        getLayoutParams().width = width;
+        getLayoutParams().height = width;
+        mCircleSize = width;
     }
 }

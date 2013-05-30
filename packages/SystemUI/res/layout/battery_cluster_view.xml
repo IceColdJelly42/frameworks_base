@@ -38,14 +38,18 @@
             android:layout_gravity="fill_vertical|right"
             android:paddingTop="@dimen/status_bar_icon_top_padding"
             android:paddingBottom="@dimen/status_bar_icon_bottom_padding" />
-	<com.android.systemui.statusbar.policy.CircleBattery
-                android:id="@+id/circle_battery"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textAppearance="@style/TextAppearance.StatusBar.Battery"
-                android:singleLine="true"
-                android:gravity="bottom"
-                android:paddingLeft="4dip" />
+	
+	    <com.android.systemui.statusbar.policy.CircleBattery
+            android:id="@+id/circle_battery"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:textAppearance="@style/TextAppearance.StatusBar.Battery"
+            android:singleLine="true"
+            android:scaleType="fitCenter"
+            android:layout_gravity="fill_vertical|right"
+            android:paddingTop="@dimen/status_bar_icon_top_padding"
+            android:paddingBottom="@dimen/status_bar_icon_bottom_padding" />
+        
         <TextView
             android:id="@+id/battery_text"
             style="@style/Battery_Offset"
