@@ -72,7 +72,6 @@ public class StatusBarIconView extends AnimatedImageView {
         float textSize = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.STATUSBAR_FONT_SIZE, 0);
         if (textSize == 0) {
-            final float densityMultiplier = res.getDisplayMetrics().density;
             textSize = 10 * densityMultiplier;
         } else {
             if (textSize < 20){
@@ -366,8 +365,8 @@ public class StatusBarIconView extends AnimatedImageView {
 
         @Override
         public void onChange(boolean selfChange) {
-            setAlpha(Settings.System.getInt(mContext.getContentResolver(),
-                        Settings.System.STATUS_BAR_NOTIF_ICON_OPACITY, 140));
+            int setAlpha = Settings.System.getInt(mContext.getContentResolver(),
+                        Settings.System.STATUS_BAR_NOTIF_ICON_OPACITY, 140);
             boolean showIconCount = Settings.System.getInt(mContext.getContentResolver(),
                     Settings.System.STATUSBAR_NOTIF_COUNT, 0) == 1;
             for (StatusBarIconView sbiv : mIconViews) {
