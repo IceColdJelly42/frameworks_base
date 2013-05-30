@@ -74,6 +74,10 @@ public class StatusBarIconView extends AnimatedImageView {
         if (textSize == 0) {
             final float densityMultiplier = res.getDisplayMetrics().density;
             textSize = 10 * densityMultiplier;
+        } else {
+            if (textSize < 20){
+                textSize = 20;
+            }
         }
         mNumberPaint.setTextSize(textSize);
         mNotification = notification;
