@@ -139,7 +139,8 @@ public class NetworkController extends BroadcastReceiver {
     private boolean mUseAltSignal;
     
     private boolean mHideAllSignals = false;
-    
+    private boolean mLastHideAllSignals = false;
+        
     // our ui
     Context mContext;
     ArrayList<ImageView> mPhoneSignalIconViews = new ArrayList<ImageView>();
@@ -1282,7 +1283,8 @@ public class NetworkController extends BroadcastReceiver {
          || mLastWifiIconId                 != mWifiIconId
          || mLastWimaxIconId                != mWimaxIconId
          || mLastDataTypeIconId             != mDataTypeIconId
-         || mLastAirplaneMode               != mAirplaneMode)
+         || mLastAirplaneMode               != mAirplaneMode
+         || mLastHideAllSignals             != mHideAllSignals)
         {
             // NB: the mLast*s will be updated later
             for (SignalCluster cluster : mSignalClusters) {
@@ -1293,6 +1295,10 @@ public class NetworkController extends BroadcastReceiver {
             }
         }
 
+        if (mLastHideAllSignals != mHideAllSignals) {
+             mLastHideAllSignals = mHideAllSignals;
+        }
+        
         if (mLastAirplaneMode != mAirplaneMode) {
             mLastAirplaneMode = mAirplaneMode;
         }
