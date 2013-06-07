@@ -784,7 +784,7 @@ final class DisplayPowerController {
         /* button light */
         boolean buttonlight_on = wantScreenOn(mPowerRequest.screenState) && (mPowerRequest.screenState != DisplayPowerRequest.SCREEN_STATE_DIM); 
        
-        if(mButtonAutoBrightness!=-1 && mButtonAutoBrightness==0){
+        if(mPowerRequest.useAutoBrightness && mButtonAutoBrightness==0){
         	buttonlight_on = false;
         }
         mButtonlight.setBrightness(buttonlight_on ? 1 : 0);
