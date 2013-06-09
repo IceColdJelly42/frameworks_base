@@ -784,10 +784,6 @@ final class DisplayPowerController {
         /* button light */
         boolean buttonlight_on = wantScreenOn(mPowerRequest.screenState) && (mPowerRequest.screenState != DisplayPowerRequest.SCREEN_STATE_DIM); 
        
-        if(mDebugLightSensor){
-            Slog.d("TAG", "mButtonAutoBrightness="+mButtonAutoBrightness);
-        }
-
         if(mPowerRequest.useAutoBrightness && mButtonAutoBrightness==0){
         	buttonlight_on = false;
         }
@@ -1198,29 +1194,25 @@ final class DisplayPowerController {
 
         int newScreenAutoBrightness = clampScreenBrightness(
                 Math.round(value * PowerManager.BRIGHTNESS_ON));
-                
-        if (DEBUG) {
-            Slog.d(TAG, "updateAutoBrightness: mScreenAutoBrightness="
-                    + mScreenAutoBrightness + ", newScreenAutoBrightness="
-                    + newScreenAutoBrightness);
-        }
+        if (mScreenAutoBrightness != newScreenAutoBrightness) {
+            if (DEBUG) {
+                Slog.d(TAG, "updateAutoBrightness: mScreenAutoBrightness="
+                        + mScreenAutoBrightness + ", newScreenAutoBrightness="
+                        + newScreenAutoBrightness);
+            }
 
-        boolean screenBrightnessChanged = newScreenAutoBrightness != mScreenAutoBrightness;
-        mScreenAutoBrightness = newScreenAutoBrightness;
-        mLastScreenAutoBrightnessGamma = gamma;
-        
-        int oldButtonBrightness = mButtonAutoBrightness;
-        calcButtonBrightnessValue();
-        boolean buttonBrightnessChanged = oldButtonBrightness != mButtonAutoBrightness;
-
-        if (screenBrightnessChanged || buttonBrightnessChanged){
+            mScreenAutoBrightness = newScreenAutoBrightness;
+            mLastScreenAutoBrightnessGamma = gamma;
+                        
+            calcButtonBrightnessValue();
+            
             if (mDebugLightSensor) {
                 Slog.d(TAG, "updateAutoBrightness: mAmbientLux=" + mAmbientLux 
                         + ", mScreenAutoBrightness=" + mScreenAutoBrightness 
                         + ", newScreenAutoBrightness=" + newScreenAutoBrightness 
                         + ", mButtonAutoBrightness="+mButtonAutoBrightness);
             }
-
+            
             if (sendUpdate) {
                 sendUpdatePowerState();
             }
@@ -1596,10 +1588,7 @@ final class DisplayPowerController {
             	break;
             }
         }
-        
-        if(mDebugLightSensor){
-            Slog.d(TAG, "brightnessIndex="+brightnessIndex);
-        }
+          
         if(brightnessIndex!=-1){
         	try {
            		mButtonAutoBrightness = buttonBrightnessValues[brightnessIndex];
