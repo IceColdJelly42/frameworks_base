@@ -393,7 +393,7 @@ public class RingtoneManager {
             mPreviousRingtone.stop();
         }
         
-        mPreviousRingtone = getRingtone(mContext, getRingtoneUri(position), inferStreamType());
+        mPreviousRingtone = getRingtone(mContext, getRingtoneUri(position), inferStreamType(), true);
         return mPreviousRingtone;
     }
 
@@ -631,9 +631,24 @@ public class RingtoneManager {
      */
     public static Ringtone getRingtone(final Context context, Uri ringtoneUri) {
         // Don't set the stream type
-        return getRingtone(context, ringtoneUri, -1);
+        return getRingtone(context, ringtoneUri, -1, true);
     }
 
+    /**
+     * Returns a {@link Ringtone} for a given sound URI without applying any profiles
+     * <p>
+     * If the given URI cannot be opened for any reason, this method will
+     * attempt to fallback on another sound. If it cannot find any, it will
+     * return null.
+     * 
+     * @param context A context used to query.
+     * @param ringtoneUri The {@link Uri} of a sound or ringtone.
+     * @return A {@link Ringtone} for the given URI, or null.
+     */
+    public static Ringtone getRingtoneWithoutProfile(final Context context, Uri ringtoneUri) {
+        // Don't set the stream type
+        return getRingtone(context, ringtoneUri, -1, false);
+    }
     /**
      * Returns a {@link Ringtone} for a given sound URI on the given stream
      * type. Normally, if you change the stream type on the returned
@@ -642,9 +657,10 @@ public class RingtoneManager {
      * 
      * @param streamType The stream type for the ringtone, or -1 if it should
      *            not be set (and the default used instead).
+     * @param withProfile Should a profile modified value be taken into account
      * @see #getRingtone(Context, Uri)
      */
-    private static Ringtone getRingtone(final Context context, Uri ringtoneUri, int streamType) {
+    private static Ringtone getRingtone(final Context context, Uri ringtoneUri, int streamType, boolean withProfile) {
         ProfileManager pm = (ProfileManager)context.getSystemService(context.PROFILE_SERVICE);
         ProfileGroup profileGroup = pm.getActiveProfileGroup(context.getPackageName());
         try {
@@ -653,7 +669,7 @@ public class RingtoneManager {
                 r.setStreamType(streamType);
             }
 
-            if (profileGroup != null) {
+            if (withProfile && profileGroup != null) {
                 switch (profileGroup.getRingerMode()) {
                     case OVERRIDE :
                         r.setUri(profileGroup.getRingerOverride());
@@ -672,7 +688,7 @@ public class RingtoneManager {
 
         return null;
     }
-
+    
     /**
      * Gets the current default sound's {@link Uri}. This will give the actual
      * sound {@link Uri}, instead of using this, most clients can use
