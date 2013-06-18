@@ -78,8 +78,8 @@ public class SbBatteryController extends LinearLayout {
     public  static final int BATTERY_STYLE_CIRCLE_PERCENT = 6;
     public  static final int BATTERY_STYLE_DOTTED_CIRCLE         = 7;
     public  static final int BATTERY_STYLE_DOTTED_CIRCLE_PERCENT = 8;
-    public static final int STYLE_ICON_SPEED = 9;
-    public static final int STYLE_ICON_SQUARE = 10;
+    public static final int STYLE_ICON_SPEED1 = 9;
+    public static final int STYLE_ICON_SPEED2 = 10;
     public static final int STYLE_HIDE = 11;
 
     public SbBatteryController(Context context, AttributeSet attrs) {
@@ -148,10 +148,10 @@ public class SbBatteryController extends LinearLayout {
         if (mBatteryStyle == STYLE_ICON_CIRCLE) {
             icon = plugged ? R.drawable.stat_sys_battery_charge_circle
                     : R.drawable.stat_sys_battery_circle;
-        } else if (mBatteryStyle == STYLE_ICON_SPEED) {
+        } else if (mBatteryStyle == STYLE_ICON_SPEED2) {
             icon = plugged ? R.drawable.stat_sys_battery_charge_altcircle
                     : R.drawable.stat_sys_battery_altcircle;
-        } else if (mBatteryStyle == STYLE_ICON_SQUARE) {
+        } else if (mBatteryStyle == STYLE_ICON_SPEED1) {
             icon = plugged ? R.drawable.stat_sys_battery_charge_square
                     : R.drawable.stat_sys_battery_square; 
         } else {
@@ -278,13 +278,13 @@ public class SbBatteryController extends LinearLayout {
                 mBatteryIcon.setVisibility(View.VISIBLE);
                 setVisibility(View.VISIBLE);
                 break;
-	    case STYLE_ICON_SPEED:
+	    case STYLE_ICON_SPEED2:
                 mBatteryText.setVisibility(View.GONE);
                 mBatteryCenterText.setVisibility(View.GONE);
                 mBatteryIcon.setVisibility(View.VISIBLE);
                 setVisibility(View.VISIBLE);
                 break;
-            case STYLE_ICON_SQUARE:
+            case STYLE_ICON_SPEED1:
                 mBatteryText.setVisibility(View.GONE);
                 mBatteryCenterText.setVisibility(View.GONE);
                 mBatteryIcon.setVisibility(View.VISIBLE);
