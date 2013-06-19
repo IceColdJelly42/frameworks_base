@@ -226,7 +226,8 @@ public class CPUInfoService extends Service {
 		private static final String CPU_CUR_TAIL = "/cpufreq/scaling_cur_freq";
 		private static final String CPU_LP_MODE = "/sys/kernel/debug/clock/cpu_lp/state";
 	    private static final String CPU_GOV_TAIL = "/cpufreq/scaling_governor";
-	    private static final String CPU_TEMP = "/sys/htc/cpu_temp";
+	    private static final String CPU_TEMP_HTC = "/sys/htc/cpu_temp";
+	    private static final String CPU_TEMP_OPPO = "/sys/class/thermal/thermal_zone0/temp";
 	    		
 		public CurCPUThread(Handler handler){
 			mHandler=handler;
@@ -259,9 +260,14 @@ public class CPUInfoService extends Service {
        	            sleep(500);
        	            StringBuffer sb=new StringBuffer();
        	            
-       	            sb.append(readOneLine(CPU_TEMP));
+       	            String cpuTemp = readOneLine(CPU_TEMP_HTC);
+       	            if (cpuTemp == null){
+       	                cpuTemp = readOneLine(CPU_TEMP_OPPO);
+       	            }
+       	            sb.append(cpuTemp == null?"0":cpuTemp);
        	            sb.append(";");
-       	            sb.append(readOneLine(CPU_LP_MODE));
+       	            String lpMode = readOneLine(CPU_LP_MODE);
+       	            sb.append(lpMode == null?"0":lpMode);
        	            sb.append(";");
        	            
        	            for(int i=0; i<4; i++){
