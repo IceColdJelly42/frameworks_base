@@ -22,6 +22,7 @@ import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PixelFormat;
+import android.graphics.Rect;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -49,6 +50,7 @@ public class CPUInfoService extends Service {
         private Paint mLpPaint;
         private float mAscent;
         private int mFH;
+        private int mMaxWidth;
 
         private int mNeededWidth;
         private int mNeededHeight;
@@ -132,6 +134,9 @@ public class CPUInfoService extends Service {
             float descent = mOnlinePaint.descent();
             mFH = (int)(descent - mAscent + .5f);
 
+            final String maxWidthStr="cpuX xxxxxxxxxxxxxx 1700000";
+            mMaxWidth = (int)mOnlinePaint.measureText(maxWidthStr);
+            
             updateDisplay();
         }
 
@@ -171,7 +176,7 @@ public class CPUInfoService extends Service {
 
             int y = mPaddingTop - (int)mAscent;
             
-            canvas.drawText("Temp:"+mCPUTemp, RIGHT-mPaddingRight-250,
+            canvas.drawText("Temp:"+mCPUTemp, RIGHT-mPaddingRight-mMaxWidth,
             	y-1, mOnlinePaint);
             y += mFH;
             
@@ -180,14 +185,14 @@ public class CPUInfoService extends Service {
 				String freq=mCurrFreq[i];
                	if(!freq.equals("0")){
             	    if(i==0 && mLpMode){
-            			canvas.drawText(s, RIGHT-mPaddingRight-250,
+            			canvas.drawText(s, RIGHT-mPaddingRight-mMaxWidth,
                     		y-1, mLpPaint);
             	    } else {
-            			canvas.drawText(s, RIGHT-mPaddingRight-250,
+            			canvas.drawText(s, RIGHT-mPaddingRight-mMaxWidth,
                     		y-1, mOnlinePaint);
                     }
                 } else {
-            		canvas.drawText(s, RIGHT-mPaddingRight-250,
+            		canvas.drawText(s, RIGHT-mPaddingRight-mMaxWidth,
                     	y-1, mOfflinePaint);
                 }
                 y += mFH;
@@ -196,8 +201,8 @@ public class CPUInfoService extends Service {
 
         void updateDisplay() {
             final int NW = 4;
-            int maxWidth = 100;
-            int neededWidth = mPaddingLeft + mPaddingRight + maxWidth;
+
+            int neededWidth = mPaddingLeft + mPaddingRight + mMaxWidth;
             int neededHeight = mPaddingTop + mPaddingBottom + (mFH*(1+NW));
             if (neededWidth != mNeededWidth || neededHeight != mNeededHeight) {
                 mNeededWidth = neededWidth;
