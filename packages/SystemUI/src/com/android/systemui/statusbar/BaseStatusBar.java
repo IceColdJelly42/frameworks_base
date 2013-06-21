@@ -219,9 +219,6 @@ public abstract class BaseStatusBar extends SystemUI implements
 
     private boolean mDeviceProvisioned = false;
 
-    private boolean mExpandedDesktop;
-    private boolean mPieExpandedOnly;
-
     public Ticker getTicker() {
         return mTicker;
     }
@@ -270,13 +267,10 @@ public abstract class BaseStatusBar extends SystemUI implements
                     Settings.System.PIE_TRIGGER), false, this);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.EXPANDED_DESKTOP_STATE), false, this);
-            resolver.registerContentObserver(Settings.System.getUriFor(
-                    Settings.System.PIE_EXPANDED_DESKTOP_ONLY), false, this);
         }
 
         @Override
         public void onChange(boolean selfChange) {
-            updateSettings();
             updatePieControls();
         }
     }
@@ -341,12 +335,9 @@ public abstract class BaseStatusBar extends SystemUI implements
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             final int action = event.getAction();
-            if (!showPie())
-                updatePieControls();
-            else
-            {
-                if (!mPieControlPanel.isShowing() && !mPieControlPanel.getKeyguardStatus()) {
-                    switch(action) {
+
+            if (!mPieControlPanel.isShowing() && ! mPieControlPanel.getKeyguardStatus()) {
+                switch(action) {
                     case MotionEvent.ACTION_DOWN:
                         centerPie = Settings.System.getInt(mContext.getContentResolver(), Settings.System.PIE_CENTER, 1) == 1;
                         actionDown = true;
@@ -369,10 +360,9 @@ public abstract class BaseStatusBar extends SystemUI implements
                             mPieControlPanel.onTouchEvent(event);
                             actionDown = false;
                         }
-                    }
-                } else {
-                    return mPieControlPanel.onTouchEvent(event);
                 }
+            } else {
+                return mPieControlPanel.onTouchEvent(event);
             }
             return false;
         }
@@ -507,9 +497,6 @@ public abstract class BaseStatusBar extends SystemUI implements
 
         SettingsObserver settingsObserver = new SettingsObserver(new Handler());
         settingsObserver.observe();
-        updateSettings();
-
-        attachPie();
     }
 
     public void setHaloTaskerActive(boolean haloTaskerActive, boolean updateNotificationIcons) {
@@ -565,14 +552,7 @@ public abstract class BaseStatusBar extends SystemUI implements
         boolean pie = Settings.System.getInt(mContext.getContentResolver(),
                 Settings.System.PIE_CONTROLS, 0) == 1;
 
-        return (pie && (!mPieExpandedOnly || mExpandedDesktop));
-    }
-
-    private void updateSettings()
-    {
-        mExpandedDesktop = Settings.System.getInt(mContext.getContentResolver(), Settings.System.EXPANDED_DESKTOP_STATE, 0) == 1;
-        mPieExpandedOnly = Settings.System.getInt(mContext.getContentResolver(), Settings.System.PIE_EXPANDED_DESKTOP_ONLY, 0) == 1;
-        Slog.e("NUKE", "PIE EXPANDED ONLY == "+mPieExpandedOnly);
+        return (pie);
     }
 
     public void updatePieControls() {
