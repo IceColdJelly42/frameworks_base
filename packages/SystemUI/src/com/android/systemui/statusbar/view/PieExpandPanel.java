@@ -47,13 +47,12 @@ public class PieExpandPanel extends LinearLayout {
         mNotificationScroller = findViewById(R.id.content_scroll);
     }
 
-    public void init(NotificationRowLayout pile, View scrollView) {
+    public void init(NotificationRowLayout pile) {
         latestItems = pile;
         int minHeight = getResources().getDimensionPixelSize(R.dimen.notification_row_min_height);
         int maxHeight = getResources().getDimensionPixelSize(R.dimen.notification_row_max_height);
         mExpandHelper = new ExpandHelper(mContext, pile, minHeight, maxHeight);
         mExpandHelper.setEventSource(this);
-        mExpandHelper.setScrollView(scrollView);
     }
 
     @Override
