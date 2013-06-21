@@ -3327,12 +3327,6 @@ public final class Settings {
          */
         public static final String PIE_EXPANDED_DESKTOP_ONLY = "pie_expanded_desktop_only";
 
-        /**
-         * Pie empty angle, should default to 0
-         * @hide
-         */
-        public static final String PIE_ANGLE = "pie_angle";
-
          /**
          * Expanded desktop on/off state
          * @hide
