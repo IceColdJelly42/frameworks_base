@@ -179,7 +179,7 @@ public class PieStatusPanel {
                             public void run() {
                                 try {
                                     mNotificationPanel.setViewRemoval(true);
-                                    mPanel.getBar().getService().onClearAllNotifications();
+                                    clearAll();
                                 } catch (Exception ex) { }
                             }
                         };
@@ -205,8 +205,7 @@ public class PieStatusPanel {
                         mHandler.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                mPostCollapseCleanup.run();
-                                hidePanels(true);
+                                hideNotificationsPanel();
                             }
                         }, totalDelay + 225);
                     }
@@ -275,6 +274,41 @@ public class PieStatusPanel {
 
     public void hideNotificationsPanel() {
         hidePanel(mNotificationPanel);
+    }
+
+    public void clearAll(){
+        if (mNotificationData != null) {
+            final boolean any = mNotificationData.size() > 0;
+            final boolean clearable = any && mNotificationData.hasClearableItems();
+            if (mCurrentViewState == QUICK_SETTINGS_PANEL) {
+                return; 
+            } else if (mClearButton.isShown()) {
+                if (clearable != (mClearButton.getAlpha() == 1.0f)) {
+                    ObjectAnimator clearAnimation = ObjectAnimator.ofFloat(
+                        mClearButton, "alpha", clearable ? 1.0f : 0.0f).setDuration(250);
+                    clearAnimation.addListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            if (mClearButton.getAlpha() <= 0.0f) {
+                                mClearButton.setVisibility(View.INVISIBLE);
+                            }
+                        }
+
+                        @Override
+                        public void onAnimationStart(Animator animation) {
+                            if (mClearButton.getAlpha() <= 0.0f) {
+                                mClearButton.setVisibility(View.VISIBLE);
+                            }
+                        }
+                    });
+                    clearAnimation.start();
+                }
+            } else {
+                mClearButton.setAlpha(clearable ? 1.0f : 0.0f);
+                mClearButton.setVisibility(clearable ? View.VISIBLE : View.INVISIBLE);
+            }
+            mClearButton.setEnabled(clearable);
+        }
     }
 
     private void showPanel(View panel) {
