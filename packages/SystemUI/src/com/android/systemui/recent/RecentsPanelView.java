@@ -104,12 +104,16 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     boolean ramBarEnabled;
     boolean mRecentsKillAllEnabled;
 
-    private static int mRecentStyle;
+    private static int mRecentClear;
     private static final int CLEAR_DISABLE = 0;
     private static final int CLEAR_BOTTOM_RIGHT = 1;
     private static final int CLEAR_BOTTOM_LEFT = 2;
     private static final int CLEAR_TOP_RIGHT = 3;
     private static final int CLEAR_TOP_LEFT = 4;
+
+    private static int mRecentStyle;
+    private static final int RECENTS_STOCK = 0;
+    private static final int RECENTS_RB = 1;
 
     TextView mBackgroundProcessText;
     TextView mForegroundProcessText;
@@ -175,22 +179,49 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
         }
 
         public View createView(ViewGroup parent) {
-            View convertView = mInflater.inflate(mRecentItemLayoutId, parent, false);
-            ViewHolder holder = new ViewHolder();
-            holder.thumbnailView = convertView.findViewById(R.id.app_thumbnail);
-            holder.thumbnailViewImage =
-                    (ImageView) convertView.findViewById(R.id.app_thumbnail_image);
-            // If we set the default thumbnail now, we avoid an onLayout when we update
-            // the thumbnail later (if they both have the same dimensions)
-            updateThumbnail(holder, mRecentTasksLoader.getDefaultThumbnail(), false, false);
-            holder.iconView = (ImageView) convertView.findViewById(R.id.app_icon);
-            holder.iconView.setImageBitmap(mRecentTasksLoader.getDefaultIcon());
-            holder.labelView = (TextView) convertView.findViewById(R.id.app_label);
-            holder.calloutLine = convertView.findViewById(R.id.recents_callout_line);
-            holder.descriptionView = (TextView) convertView.findViewById(R.id.app_description);
+           mRecentStyle = Settings.System.getInt(mContext.getContentResolver(),
+                 Settings.System.RECENTS_STYLE, 0);
+           View convertView = mInflater.inflate(mRecentItemLayoutId, parent, false);
+           ViewHolder holder = new ViewHolder();
+           switch (mRecentStyle) {
+              case RECENTS_STOCK:
+            	holder.thumbnailView = convertView.findViewById(R.id.app_thumbnail);
+            	holder.thumbnailViewImage =
+                    	(ImageView) convertView.findViewById(R.id.app_thumbnail_image);
 
-            convertView.setTag(holder);
-            return convertView;
+            	holder.thumbnailViewImage.getLayoutParams().width = mThumbnailWidth;
+            	holder.thumbnailViewImage.getLayoutParams().height = mThumbnailHeight;
+
+            	// If we set the default thumbnail now, we avoid an onLayout when we update
+            	// the thumbnail later (if they both have the same dimensions)
+            	updateThumbnail(holder, mRecentTasksLoader.getDefaultThumbnail(), false, false);
+            	holder.iconView = (ImageView) convertView.findViewById(R.id.app_icon);
+            	holder.iconView.setImageBitmap(mRecentTasksLoader.getDefaultIcon());
+            	holder.labelView = (TextView) convertView.findViewById(R.id.app_label);
+            	holder.calloutLine = convertView.findViewById(R.id.recents_callout_line);
+            	holder.descriptionView = (TextView) convertView.findViewById(R.id.app_description);
+                break;
+              case RECENTS_RB:
+            	holder.thumbnailView = convertView.findViewById(R.id.app_thumbnail_alt);
+            	holder.thumbnailViewImage =
+                    	(ImageView) convertView.findViewById(R.id.app_thumbnail_image_alt);
+
+            	holder.thumbnailViewImage.getLayoutParams().width = mThumbnailWidth;
+            	holder.thumbnailViewImage.getLayoutParams().height = mThumbnailHeight;
+
+            	// If we set the default thumbnail now, we avoid an onLayout when we update
+            	// the thumbnail later (if they both have the same dimensions)
+            	updateThumbnail(holder, mRecentTasksLoader.getDefaultThumbnail(), false, false);
+            	holder.iconView = (ImageView) convertView.findViewById(R.id.app_icon_alt);
+            	holder.iconView.setImageBitmap(mRecentTasksLoader.getDefaultIcon());
+            	holder.labelView = (TextView) convertView.findViewById(R.id.app_label_alt);
+            	holder.calloutLine = convertView.findViewById(R.id.recents_callout_line);
+            	holder.calloutLine.setVisibility(View.GONE);
+            	holder.descriptionView = (TextView) convertView.findViewById(R.id.app_description);
+                break;
+           }
+           convertView.setTag(holder);
+           return convertView; 
         }
 
         public View getView(int position, View convertView, ViewGroup parent) {
@@ -923,7 +954,7 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
                     .getUriFor(Settings.System.RAM_USAGE_BAR),
                     false, this);
             resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.RECENT_KILL_ALL_BUTTON),
+                    .getUriFor(Settings.System.RECENTS_CLEAR),
                     false, this);
             updateSettings();
         }
@@ -937,13 +968,13 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
     public void updateSettings() {
         ramBarEnabled = Settings.System.getBoolean(mContext.getContentResolver(),
                 Settings.System.RAM_USAGE_BAR, false);
-        mRecentStyle = Settings.System.getInt(mContext.getContentResolver(),
-                Settings.System.RECENTS_STYLE, 0);
+        mRecentClear = Settings.System.getInt(mContext.getContentResolver(),
+                Settings.System.RECENTS_CLEAR, 0);
 
         if (mRamUsageBar != null) {
             mRamUsageBar.setVisibility(ramBarEnabled ? View.VISIBLE : View.GONE);
         }
-        switch (mRecentStyle) {
+        switch (mRecentClear) {
             case CLEAR_DISABLE:
             mRecentsKillAllButtonBR.setVisibility(View.GONE);
             mRecentsKillAllButtonBL.setVisibility(View.GONE);
