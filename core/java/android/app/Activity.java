@@ -768,6 +768,11 @@ public class Activity extends ContextThemeWrapper
     private Thread mUiThread;
     final Handler mHandler = new Handler();
 
+	// statusbar swipe
+    boolean mMightBeStatusbarSwipe = false;
+    float mStatusbarSwipePos;
+	static int mStatusbarHeight = -1;
+	
     /** Return the intent that started this activity. */
     public Intent getIntent() {
         return mIntent;
@@ -2405,9 +2410,6 @@ public class Activity extends ContextThemeWrapper
         }
         return onKeyShortcut(event.getKeyCode(), event);
     }
-
-    boolean mightBeMyGesture = false;
-    float tStatus;
     
     /**
      * Called to process touch screen events.  You can override this to
@@ -2423,22 +2425,22 @@ public class Activity extends ContextThemeWrapper
             switch (ev.getAction())
             {
                 case MotionEvent.ACTION_DOWN:
-                    tStatus = ev.getY();
-                    if (tStatus < getStatusBarHeight())
+                    mStatusbarSwipePos = ev.getY();
+                    if (mStatusbarSwipePos < gemStatusbarSwipePosBarHeight())
                     {
                         boolean swipeEnabled = Settings.System.getBoolean(getContentResolver(),
                                 Settings.System.STATUSBAR_SWIPE_ENABLE, false);
                         
                         if (swipeEnabled){
-                            mightBeMyGesture = true;
+                            mMightBeStatusbarSwipe = true;
                         }
                     }
                     break;
                 case MotionEvent.ACTION_MOVE:
-                    if (mightBeMyGesture)
+                    if (mMightBeStatusbarSwipe)
                     {
                     	// wait for a minimal move else it can open too early
-                        if(ev.getY() > (tStatus + 5))
+                        if(ev.getY() > (mStatusbarSwipePos + 5))
                         {
                             // maxwen: for fullscreen apps this means
                             // that showing the statusbar is not doing 
@@ -2449,14 +2451,14 @@ public class Activity extends ContextThemeWrapper
                                 Log.e(TAG, "startSwipeTimer", e);
                             }
 
-                            mightBeMyGesture = false;       
+                            mMightBeStatusbarSwipe = false;       
                             // dont send event further                    
                             return true;
                         }
                     }
                     break;
                 default:
-                    mightBeMyGesture = false;
+                    mMightBeStatusbarSwipe = false;
                     break;
               }
               
@@ -2469,8 +2471,11 @@ public class Activity extends ContextThemeWrapper
         return onTouchEvent(ev);
     }
 
-    public int getStatusBarHeight() {
-      return getResources().getDimensionPixelSize(com.android.internal.R.dimen.status_bar_height);
+    public int gemStatusbarSwipePosBarHeight() {
+        if (mStatusbarHeight == -1){
+            mStatusbarHeight = getResources().getDimensionPixelSize(com.android.internal.R.dimen.status_bar_height);
+        }
+        return mStatusbarHeight;
     }
 
     /**
