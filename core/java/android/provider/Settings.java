@@ -3809,13 +3809,6 @@ public final class Settings {
 
         /**
          *
-         * HALO being minimal.
-         * @hide
-         */
-        public static final String HALO_STYLE = "halo_style";
-
-        /**
-         *
          * @hide
          */
         public static final String APP_WINDOW_HIDDEN_APPS = "app_window_hidden_apps";
@@ -3893,6 +3886,13 @@ public final class Settings {
             "ribbon_icon_location_left",
             "ribbon_icon_location_right",
         };
+
+        /**
+         *
+         * HALO circle bg color.
+         * @hide
+         */
+        public static final String HALO_CIRCLE_COLOR = "halo_circle_color";
 
         /**
          * HALO speech bubble color
