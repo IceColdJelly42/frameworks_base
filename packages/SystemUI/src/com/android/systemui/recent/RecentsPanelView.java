@@ -188,10 +188,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             	holder.thumbnailView = convertView.findViewById(R.id.app_thumbnail);
             	holder.thumbnailViewImage =
                     	(ImageView) convertView.findViewById(R.id.app_thumbnail_image);
-
-            	holder.thumbnailViewImage.getLayoutParams().width = mThumbnailWidth;
-            	holder.thumbnailViewImage.getLayoutParams().height = mThumbnailHeight;
-
             	// If we set the default thumbnail now, we avoid an onLayout when we update
             	// the thumbnail later (if they both have the same dimensions)
             	updateThumbnail(holder, mRecentTasksLoader.getDefaultThumbnail(), false, false);
@@ -205,10 +201,6 @@ public class RecentsPanelView extends FrameLayout implements OnItemClickListener
             	holder.thumbnailView = convertView.findViewById(R.id.app_thumbnail_alt);
             	holder.thumbnailViewImage =
                     	(ImageView) convertView.findViewById(R.id.app_thumbnail_image_alt);
-
-            	holder.thumbnailViewImage.getLayoutParams().width = mThumbnailWidth;
-            	holder.thumbnailViewImage.getLayoutParams().height = mThumbnailHeight;
-
             	// If we set the default thumbnail now, we avoid an onLayout when we update
             	// the thumbnail later (if they both have the same dimensions)
             	updateThumbnail(holder, mRecentTasksLoader.getDefaultThumbnail(), false, false);
