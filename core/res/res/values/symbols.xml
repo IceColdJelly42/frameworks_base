@@ -2033,4 +2033,8 @@
   <java-symbol type="string" name="minutes" />
   <java-symbol type="string" name="second" />
   <java-symbol type="string" name="seconds" />
+
+  <!-- Screenshort Trash -->
+  <java-symbol type="string" name="trash" />
+
 </resources>
