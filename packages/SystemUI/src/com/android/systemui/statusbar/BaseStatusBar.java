@@ -345,7 +345,7 @@ public abstract class BaseStatusBar extends SystemUI implements
                 updatePieControls();
             else
             {
-                if (!mPieControlPanel.isShowing() && !mPieControlPanel.getKeyguardStatus()) {
+                if (!mPieControlPanel.isShowing()) {
                     switch(action) {
                     case MotionEvent.ACTION_DOWN:
                         centerPie = Settings.System.getInt(mContext.getContentResolver(), Settings.System.PIE_CENTER, 1) == 1;
