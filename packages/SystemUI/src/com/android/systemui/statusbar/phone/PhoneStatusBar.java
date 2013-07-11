@@ -118,6 +118,7 @@ import java.io.FileDescriptor;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.io.File;
 
 public class PhoneStatusBar extends BaseStatusBar {
     static final String TAG = "PhoneStatusBar";
@@ -348,7 +349,9 @@ public class PhoneStatusBar extends BaseStatusBar {
     private int mLastCount = -1;
     
     private boolean mEnableAutoShowStatusbar = false;
-    
+
+    private final String NOTIF_WALLPAPER_IMAGE_PATH = "/data/data/com.aokp.romcontrol/files/notification_wallpaper.jpg";
+        
     // XXX: gesture research
     private final GestureRecorder mGestureRec = DEBUG_GESTURES
         ? new GestureRecorder("/sdcard/statusbar_gestures.dat") 
@@ -737,6 +740,9 @@ public class PhoneStatusBar extends BaseStatusBar {
                 updateCarrierAndWifiLabelVisibility(false);
             }
         });
+
+        // Set notification background
+        setNotificationWallpaperHelper();
 
         // Quick Settings (where available, some restrictions apply)
         if (mHasSettingsPanel) {
@@ -1390,6 +1396,8 @@ public class PhoneStatusBar extends BaseStatusBar {
             mPile.removeView(remove);
         }
 
+        //set alpha for notification pile before it is added
+        setNotificationAlphaHelper();
         for (int i=0; i<toShow.size(); i++) {
             View v = toShow.get(i);
             if (v.getParent() == null) {
@@ -3280,11 +3288,18 @@ public class PhoneStatusBar extends BaseStatusBar {
                     Settings.System.NOTIFICATION_SHORTCUTS_HIDE_CARRIER), false, this, UserHandle.USER_ALL);
             resolver.registerContentObserver(Settings.System.getUriFor(
                     Settings.System.STATUSBAR_AUTO_EXPAND_HIDDEN), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NOTIF_ALPHA), false, this);
+            resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.NOTIF_WALLPAPER_ALPHA), false, this);
+
         }
 
         @Override
         public void onChange(boolean selfChange) {
             updateSettings();
+            setNotificationAlphaHelper();
+            setNotificationWallpaperHelper();
             updateStatusBarVisibility();
         }
     }
@@ -3408,4 +3423,30 @@ public class PhoneStatusBar extends BaseStatusBar {
         return brightness;
     }
 
+}
+    private void setNotificationWallpaperHelper() {
+        float wallpaperAlpha = Settings.System.getFloat(mContext.getContentResolver(), Settings.System.NOTIF_WALLPAPER_ALPHA, 1.0f);
+        File file = new File(NOTIF_WALLPAPER_IMAGE_PATH);
+
+        if (!file.exists()) {
+            Drawable background = mNotificationPanel.getBackground();
+            background.setAlpha((int) (wallpaperAlpha * 255));
+        }
+    }
+
+    private void setNotificationAlphaHelper() {
+        float notifAlpha = Settings.System.getFloat(mContext.getContentResolver(), Settings.System.NOTIF_ALPHA, 1.0f);
+        if (mPile != null) {
+            int N = mNotificationData.size();
+            for (int i=0; i<N; i++) {
+                Entry ent = mNotificationData.get(N-i-1);
+                View expanded = ent.expanded;
+                if (expanded !=null && expanded.getBackground()!=null) 
+                    expanded.getBackground().setAlpha((int) (notifAlpha * 255));
+                View large = ent.getLargeView();
+                if (large != null && large.getBackground()!=null)
+                    large.getBackground().setAlpha((int) (notifAlpha * 255));
+            }
+        }
+    }
 }
