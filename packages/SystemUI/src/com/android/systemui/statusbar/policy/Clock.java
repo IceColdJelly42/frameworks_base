@@ -248,6 +248,10 @@ public class Clock extends TextView {
             resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.STATUSBAR_CLOCK_WEEKDAY), false,
                     this);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.STATUSBAR_FONT_SIZE), false,
+                    this);
+
             updateSettings();
         }
 

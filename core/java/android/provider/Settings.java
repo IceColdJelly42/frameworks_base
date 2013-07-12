@@ -2635,6 +2635,11 @@ public final class Settings {
          */
         public static final String STATUSBAR_CLOCK_WEEKDAY = "statusbar_clock_weekday";
 
+		/**
+		 *  Setting for showing statusbar date
+		 */
+        public static final String STATUSBAR_SHOW_DATE = "statusbar_show_date";
+        
         /**
          * Show the pending notification counts as overlays on the statusbar
          * @hide
