@@ -41,7 +41,6 @@ public class DateViewCenter extends TextView {
     private boolean mAttached;
     private int mClockColor;
     private int mStockFontSize;
-    private int mFontSize;
     private boolean mShowDate;
     protected int mClockStyle = Clock.STYLE_CLOCK_RIGHT;
     
@@ -112,9 +111,6 @@ public class DateViewCenter extends TextView {
                     .getUriFor(Settings.System.STATUSBAR_CLOCK_COLOR), false,
                     this);
             resolver.registerContentObserver(Settings.System
-                    .getUriFor(Settings.System.STATUSBAR_FONT_SIZE), false,
-                    this);
-            resolver.registerContentObserver(Settings.System
                     .getUriFor(Settings.System.STATUSBAR_CLOCK_STYLE), false,
                     this);
 
@@ -131,8 +127,6 @@ public class DateViewCenter extends TextView {
         ContentResolver resolver = mContext.getContentResolver();
         int newColor = 0;
 
-        mFontSize = Settings.System.getInt(resolver,
-                Settings.System.STATUSBAR_FONT_SIZE, mStockFontSize);
         newColor = Settings.System.getInt(resolver,
                 Settings.System.STATUSBAR_CLOCK_COLOR, mClockColor);
 		mShowDate = Settings.System.getBoolean(resolver,
@@ -143,9 +137,6 @@ public class DateViewCenter extends TextView {
         if (newColor < 0 && newColor != mClockColor) {
             mClockColor = newColor;
             setTextColor(mClockColor);
-        }
-        if (mFontSize != getTextSize()){
-            setTextSize(mFontSize);
         }
         updateDateVisibility();
         updateClock();
