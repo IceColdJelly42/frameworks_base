@@ -61,7 +61,7 @@ public class DateViewCenter extends TextView {
     }
 
     protected void updateClock() {
-        final String dateFormat = getContext().getString(R.string.full_wday_month_day_no_year_split);
+        final String dateFormat = getContext().getString(R.string.abbrev_wday_month_day_no_year);
         setText(DateFormat.format(dateFormat, new Date()));
     }
     
