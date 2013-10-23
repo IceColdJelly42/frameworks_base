@@ -285,4 +285,9 @@ interface IWindowManager
      * @return The magnification spec if such or null.
      */
     MagnificationSpec getCompatibleMagnificationSpecForWindow(in IBinder windowToken);
+
+    /**
+     * YIPPIE KIE-YAY MOTHER FUCKER
+     */
+    void updateDisplayMetrics();
 }
