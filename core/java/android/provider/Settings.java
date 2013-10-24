@@ -4555,6 +4555,18 @@ public final class Settings {
           */
          public static final String KEY_CAMERA_LONG_PRESS_ACTION = "key_camera_long_press_action";
 
+        /**
+         * Setting for toast color
+         * @hide
+         */
+        public static final String TOAST_COLOR_OPTION = "toast_color_option";
+
+        /**
+         * Setting for toast color
+         * @hide
+         */
+        public static final String TOAST_COLOR = "toast_color";
+
 
         /**
          * Settings to backup. This is here so that it's in the same place as the settings

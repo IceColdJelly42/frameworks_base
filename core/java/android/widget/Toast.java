@@ -18,6 +18,7 @@ package android.widget;
 
 import android.app.INotificationManager;
 import android.app.ITransientNotification;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.Resources;
@@ -25,6 +26,7 @@ import android.graphics.PixelFormat;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.os.ServiceManager;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -59,6 +61,11 @@ import android.view.accessibility.AccessibilityManager;
 public class Toast {
     static final String TAG = "Toast";
     static final boolean localLOGV = false;
+
+    protected int mToastColor = com.android.internal.R.color.bright_foreground_dark;
+    protected int defaultColor;
+    protected boolean customColor;
+    SettingsObserver mSettingsObserver;
 
     /**
      * Show the view or text notification for a short period of time.  This time
@@ -236,6 +243,10 @@ public class Toast {
      */
     public static Toast makeText(Context context, CharSequence text, int duration) {
         Toast result = new Toast(context);
+
+        mSettingsObserver = new SettingsObserver(mHandler);
+        mSettingsObserver.observe();
+
 
         LayoutInflater inflate = (LayoutInflater)
                 context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -433,6 +444,31 @@ public class Toast {
 
                 mView = null;
             }
+        }
+    }
+
+    // observes changes in system settings and enables/disables view accordingly
+    class SettingsObserver extends ContentObserver {
+        SettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        public void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.TOAST_COLOR), false, this);
+            resolver.registerContentObserver(Settings.System
+                    .getUriFor(Settings.System.TOAST_COLOR_OPTION), false, this);
+            onChange(true);
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            defaultColor = getResources().getColor(
+                    com.android.internal.R.color.holo_blue_light);
+            customColor = Settings.System.getInt(mContext.getContentResolver(),
+                    Settings.System.ICON_COLOR_BEHAVIOR, 0) == 1;
+
         }
     }
 }
